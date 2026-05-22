@@ -1,0 +1,24 @@
+{
+  "name": "ezhavaclub-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for EzhavaClub - Admin and User applications",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^1.12.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
