@@ -309,6 +309,82 @@ By the end of Phase 1, a community member should be able to:
 
 ---
 
+## Backend Architecture Design (Domain-Driven Modular)
+
+For scalability and clean division of concerns across multiple platforms (Admin, User Web, Flutter Apps), `apps/api/` uses a **Domain-Driven Modular Architecture**.
+
+### Folder Directory Layout
+```text
+apps/api/
+├── src/
+│   ├── app.ts                  # Hono app setup (middlewares, routes registration)
+│   ├── server.ts               # Server entry point (starts Node adapter)
+│   ├── routes.ts               # Versioned root routes directory
+│   │
+│   ├── config/                 # Global configuration settings
+│   │   ├── env.ts              # Schema-validated env loader
+│   │   ├── database.ts         # Drizzle connection client
+│   │   ├── auth.ts             # JWT/Supabase auth handlers
+│   │   └── storage.ts          # File upload configurations
+│   │
+│   ├── db/                     # Drizzle Database root
+│   │   ├── schema/             # Partitioned schema definitions
+│   │   ├── migrations/         # Drizzle output migration files
+│   │   └── seed/               # Default lookup data seeds
+│   │
+│   ├── common/                 # Shared project modules
+│   │   ├── errors/             # Custom Error handlers
+│   │   ├── middleware/         # Hono core middlewares (logger, auth)
+│   │   ├── validators/         # Common validator definitions
+│   │   └── responses/          # Standard success/error response formats
+│   │
+│   └── modules/                # Business Domain Modules (Self-contained)
+│       ├── auth/
+│       ├── members/
+│       ├── businesses/
+│       ├── service-providers/
+│       ├── categories/
+│       ├── analytics/
+│       ├── verification/
+│       └── settings/
+```
+
+### Self-Contained Domain Modules
+Each sub-folder inside `apps/api/src/modules/` is self-contained and holds its own business layers:
+*   `*.routes.ts`: Defines Hono endpoints (no business logic).
+*   `*.controller.ts`: Validates request input parameters, calls domain services, and returns standardized response models.
+*   `*.service.ts`: Implements business operations logic (e.g. `registerBusiness()`, `vetVendor()`).
+*   `*.repository.ts`: Handles direct Drizzle query selections and mutations (no business logic).
+*   `*.validation.ts`: Zod validation schemas for input auditing.
+*   `*.dto.ts` / `*.mapper.ts`: Maps raw database schema records to clean API response objects.
+
+### Request Execution Flow
+```
+Client Request ──> Common Middleware ──> Routes ──> Controller ──> Service ──> Repository ──> PostgreSQL
+```
+
+### Standardized Response Formats
+
+*   **Success Response (HTTP 200/201)**:
+    ```json
+    {
+      "success": true,
+      "message": "Resource created successfully",
+      "data": {},
+      "meta": {}
+    }
+    ```
+*   **Error Response (HTTP 400/500/404)**:
+    ```json
+    {
+      "success": false,
+      "message": "Resource not found",
+      "errors": ["Unable to resolve ID"]
+    }
+    ```
+
+---
+
 ## Setup & Installation
 
 1. **Install Workspace Dependencies**:
