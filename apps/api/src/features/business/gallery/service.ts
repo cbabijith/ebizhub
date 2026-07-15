@@ -16,6 +16,11 @@ export class GalleryService {
       throw new Error("Forbidden: You do not own this business");
     }
 
+    const count = await galleryRepo.countImages(data.businessId);
+    if (count >= 10) {
+      throw new Error("Maximum of 10 gallery images allowed per business");
+    }
+
     return await db.transaction(async (tx) => {
       if (data.isCover) {
         // Reset other covers

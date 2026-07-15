@@ -54,6 +54,36 @@ export class BusinessRepository {
     return result;
   }
 
+  async findPublicById(id: string) {
+    const [result] = await db
+      .select({
+        id: businesses.id,
+        categoryId: businesses.categoryId,
+        categoryName: businessCategories.name,
+        businessName: businesses.businessName,
+        slug: businesses.slug,
+        description: businesses.description,
+        phone: businesses.phone,
+        whatsapp: businesses.whatsapp,
+        email: businesses.email,
+        website: businesses.website,
+        logo: businesses.logo,
+        coverImage: businesses.coverImage,
+        address: businesses.address,
+        districtId: businesses.districtId,
+        panchayatId: businesses.panchayatId,
+        latitude: businesses.latitude,
+        longitude: businesses.longitude,
+        googleMapsUrl: businesses.googleMapsUrl,
+        workingHours: businesses.workingHours,
+        establishedYear: businesses.establishedYear,
+      })
+      .from(businesses)
+      .leftJoin(businessCategories, eq(businesses.categoryId, businessCategories.id))
+      .where(and(eq(businesses.id, id), isNull(businesses.deletedAt)));
+    return result;
+  }
+
   async findBySlug(slug: string) {
     const [result] = await db
       .select()
@@ -77,4 +107,14 @@ export class BusinessRepository {
       .returning();
     return result;
   }
+
+  async updateStatus(id: string, status: "active" | "inactive" | "suspended") {
+    const [result] = await db
+      .update(businesses)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(businesses.id, id))
+      .returning();
+    return result;
+  }
 }
+

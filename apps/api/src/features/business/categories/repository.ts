@@ -57,4 +57,31 @@ export class CategoryRepository {
       .returning();
     return result;
   }
+
+  async findByName(name: string) {
+    const [result] = await db
+      .select()
+      .from(businessCategories)
+      .where(and(eq(businessCategories.name, name), isNull(businessCategories.deletedAt)));
+    return result;
+  }
+
+  async updateStatus(id: number, status: "active" | "inactive") {
+    const [result] = await db
+      .update(businessCategories)
+      .set({ status })
+      .where(eq(businessCategories.id, id))
+      .returning();
+    return result;
+  }
+
+  async updateSortOrder(id: number, sortOrder: number) {
+    const [result] = await db
+      .update(businessCategories)
+      .set({ sortOrder })
+      .where(eq(businessCategories.id, id))
+      .returning();
+    return result;
+  }
 }
+

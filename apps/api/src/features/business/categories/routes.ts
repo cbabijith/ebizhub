@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { CategoryController } from "./controller.js";
 import { authMiddleware, requireRole } from "../../../shared/middleware/auth.js";
 import { errorResponse } from "../../../shared/responses/response.js";
-import { categorySchema } from "./validation.js";
+import { categorySchema, categoryReorderSchema } from "./validation.js";
 
 export const categoriesRouter = new Hono();
 const controller = new CategoryController();
@@ -25,5 +25,9 @@ categoriesRouter.use(requireRole(["admin"]));
 
 categoriesRouter.get("/all", (c) => controller.getAll(c));
 categoriesRouter.post("/", validateJson(categorySchema), (c) => controller.create(c));
+categoriesRouter.put("/reorder", validateJson(categoryReorderSchema), (c) => controller.reorder(c));
 categoriesRouter.put("/:id", validateJson(categorySchema), (c) => controller.update(c));
 categoriesRouter.delete("/:id", (c) => controller.delete(c));
+categoriesRouter.patch("/:id/activate", (c) => controller.activate(c));
+categoriesRouter.patch("/:id/deactivate", (c) => controller.deactivate(c));
+

@@ -1,9 +1,17 @@
 import { BusinessRepository } from "./repository.js";
+import { CategoryRepository } from "../categories/repository.js";
 
 const businessRepo = new BusinessRepository();
+const categoryRepo = new CategoryRepository();
 
 export class BusinessService {
   async registerBusiness(ownerId: string, data: any) {
+    // Category existence validation
+    const category = await categoryRepo.findById(data.categoryId);
+    if (!category || category.status !== "active") {
+      throw new Error("Invalid category ID");
+    }
+
     const existingSlug = await businessRepo.findBySlug(data.slug);
     if (existingSlug) {
       throw new Error("Business with this slug already exists");
@@ -15,14 +23,14 @@ export class BusinessService {
     });
   }
 
-  async updateBusiness(id: string, ownerId: string, data: any) {
+  async updateBusiness(id: string, ownerId: string, userRole: string, data: any) {
     const existing = await businessRepo.findById(id);
     if (!existing) {
       throw new Error("Business not found");
     }
 
     // Ownership check (unless Admin)
-    if (existing.ownerId !== ownerId) {
+    if (userRole !== "admin" && existing.ownerId !== ownerId) {
       throw new Error("Forbidden: You do not own this business");
     }
 
@@ -48,16 +56,32 @@ export class BusinessService {
     return business;
   }
 
-  async deleteBusiness(id: string, ownerId: string) {
+  async deleteBusiness(id: string, ownerId: string, userRole: string) {
     const existing = await businessRepo.findById(id);
     if (!existing) {
       throw new Error("Business not found");
     }
 
-    if (existing.ownerId !== ownerId) {
+    if (userRole !== "admin" && existing.ownerId !== ownerId) {
       throw new Error("Forbidden: You do not own this business");
     }
 
     return await businessRepo.softDelete(id);
+  }
+
+  async updateBusinessStatus(id: string, status: "active" | "inactive" | "suspended") {
+    const existing = await businessRepo.findById(id);
+    if (!existing) {
+      throw new Error("Business not found");
+    }
+    return await businessRepo.updateStatus(id, status);
+  }
+
+  async getPublicBusinessById(id: string) {
+    const business = await businessRepo.findPublicById(id);
+    if (!business) {
+      throw new Error("Business not found");
+    }
+    return business;
   }
 }

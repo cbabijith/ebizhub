@@ -1,6 +1,6 @@
 import { db } from "../../../config/database.js";
 import { businessGallery } from "../../../database/schema.js";
-import { eq, and } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
 
 export class GalleryRepository {
   async create(data: any) {
@@ -50,4 +50,13 @@ export class GalleryRepository {
       .returning();
     return result;
   }
+
+  async countImages(businessId: string): Promise<number> {
+    const [result] = await db
+      .select({ val: count() })
+      .from(businessGallery)
+      .where(eq(businessGallery.businessId, businessId));
+    return result?.val || 0;
+  }
 }
+

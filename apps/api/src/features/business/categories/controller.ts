@@ -59,4 +59,40 @@ export class CategoryController {
       return errorResponse(c, err.message || "Failed to delete category", [err.message], 400);
     }
   }
+
+  async activate(c: Context) {
+    try {
+      const id = parseInt(c.req.param("id") || "0", 10);
+      if (isNaN(id)) {
+        return errorResponse(c, "Invalid category ID", [], 400);
+      }
+      const result = await categoryService.activateCategory(id);
+      return successResponse(c, "Category activated successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to activate category", [err.message], 400);
+    }
+  }
+
+  async deactivate(c: Context) {
+    try {
+      const id = parseInt(c.req.param("id") || "0", 10);
+      if (isNaN(id)) {
+        return errorResponse(c, "Invalid category ID", [], 400);
+      }
+      const result = await categoryService.deactivateCategory(id);
+      return successResponse(c, "Category deactivated successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to deactivate category", [err.message], 400);
+    }
+  }
+
+  async reorder(c: Context) {
+    try {
+      const { categories } = c.req.valid("json" as never) as any;
+      const result = await categoryService.reorderCategories(categories);
+      return successResponse(c, "Categories reordered successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to reorder categories", [err.message], 400);
+    }
+  }
 }

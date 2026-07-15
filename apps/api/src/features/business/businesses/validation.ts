@@ -20,5 +20,9 @@ export const businessSchema = z.object({
   workingHours: z.string().optional().nullable(),
   gstNumber: z.string().optional().nullable(),
   registrationNumber: z.string().optional().nullable(),
-  establishedYear: z.number().int().positive().optional().nullable(),
 });
+
+export const businessStatusSchema = z.object({
+  status: z.enum(["active", "inactive", "suspended"]),
+});
+

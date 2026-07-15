@@ -1,6 +1,6 @@
 # Feature 03 — Business Management
 
-**Version:** v1.0  
+**Version:** v2.0  
 **Status:** ✅ COMPLETED  
 **Module Path:** `apps/api/src/features/business/`
 
@@ -41,54 +41,58 @@ Each sub-module contains: `validation.ts`, `repository.ts`, `service.ts`, `contr
 
 ### Business Categories — `/api/v1/business-categories`
 
-| Method | Path       | Auth       | Description               |
-|--------|------------|------------|---------------------------|
-| GET    | `/`        | Public     | List active categories    |
-| GET    | `/all`     | Admin      | List all categories       |
-| POST   | `/`        | Admin      | Create category           |
-| PUT    | `/:id`     | Admin      | Update category           |
-| DELETE | `/:id`     | Admin      | Soft-delete category      |
+| Method | Path               | Auth       | Description                   |
+|--------|--------------------|------------|-------------------------------|
+| GET    | `/`                | Public     | List active categories        |
+| GET    | `/all`             | Admin      | List all categories           |
+| POST   | `/`                | Admin      | Create category (auto-slug)   |
+| PUT    | `/reorder`         | Admin      | Reorder categories            |
+| PUT    | `/:id`             | Admin      | Update category               |
+| DELETE | `/:id`             | Admin      | Soft-delete category          |
+| PATCH  | `/:id/activate`    | Admin      | Activate category             |
+| PATCH  | `/:id/deactivate`  | Admin      | Deactivate category           |
 
 ### Businesses — `/api/v1/businesses`
 
-| Method | Path    | Auth     | Description                        |
-|--------|---------|----------|------------------------------------|
-| POST   | `/`     | Member   | Register a new business            |
-| GET    | `/me`   | Member   | List own businesses                |
-| GET    | `/:id`  | Public   | Get business public profile        |
-| PUT    | `/:id`  | Member   | Update own business (ownership check) |
-| DELETE | `/:id`  | Member   | Soft-delete own business           |
+| Method | Path          | Auth     | Description                            |
+|--------|---------------|----------|----------------------------------------|
+| POST   | `/`           | Vendor/Admin | Register a new business (role-enforced) |
+| GET    | `/me`         | Member   | List own businesses                    |
+| GET    | `/:id`        | Public   | Get business public profile (hidden details) |
+| PUT    | `/:id`        | Member   | Update own business (ownership/admin override) |
+| DELETE | `/:id`        | Member   | Soft-delete own business (admin override) |
+| PATCH  | `/:id/status` | Admin    | Admin sets business status             |
 
 ### Business Gallery — `/api/v1/business-gallery`
 
-| Method | Path         | Auth   | Description              |
-|--------|--------------|--------|--------------------------|
-| POST   | `/`          | Member | Add image to gallery     |
-| PUT    | `/reorder`   | Member | Reorder gallery images   |
-| DELETE | `/:id`       | Member | Delete gallery image     |
+| Method | Path         | Auth   | Description                  |
+|--------|--------------|--------|------------------------------|
+| POST   | `/`          | Member | Add image (max 10 limit)     |
+| PUT    | `/reorder`   | Member | Reorder gallery images       |
+| DELETE | `/:id`       | Member | Delete gallery image         |
 
 ### Business Products — `/api/v1/business-products`
 
-| Method | Path    | Auth   | Description              |
-|--------|---------|--------|--------------------------|
-| POST   | `/`     | Member | Add product (max 5)      |
-| PUT    | `/:id`  | Member | Update product           |
-| DELETE | `/:id`  | Member | Soft-delete product      |
+| Method | Path    | Auth   | Description                  |
+|--------|---------|--------|------------------------------|
+| POST   | `/`     | Member | Add product (max 5 limit)    |
+| PUT    | `/:id`  | Member | Update product               |
+| DELETE | `/:id`  | Member | Soft-delete product          |
 
 ### Business Services — `/api/v1/business-services`
 
-| Method | Path    | Auth   | Description              |
-|--------|---------|--------|--------------------------|
-| POST   | `/`     | Member | Add service (max 5)      |
-| PUT    | `/:id`  | Member | Update service           |
-| DELETE | `/:id`  | Member | Soft-delete service      |
+| Method | Path    | Auth   | Description                  |
+|--------|---------|--------|------------------------------|
+| POST   | `/`     | Member | Add service (max 5 limit)    |
+| PUT    | `/:id`  | Member | Update service               |
+| DELETE | `/:id`  | Member | Soft-delete service          |
 
 ### Business Verification — `/api/v1/business-verification`
 
-| Method | Path             | Auth  | Description              |
-|--------|------------------|-------|--------------------------|
-| POST   | `/:id/verify`    | Admin | Approve business         |
-| POST   | `/:id/reject`    | Admin | Reject with remarks      |
+| Method | Path             | Auth  | Description                  |
+|--------|------------------|-------|------------------------------|
+| POST   | `/:id/verify`    | Admin | Approve business             |
+| POST   | `/:id/reject`    | Admin | Reject with remarks          |
 
 ### Business Search — `/api/v1/business-search`
 
@@ -108,73 +112,38 @@ Each sub-module contains: `validation.ts`, `repository.ts`, `service.ts`, `contr
 ## Business Rules Enforced
 
 ### Max 5 Products and Services
-The `ProductService.addProduct()` and `ServiceService.addService()` methods query `countProducts(businessId)` / `countServices(businessId)` before inserting. If the count is already ≥ 5, they throw:
-```
-"Maximum of 5 products allowed per business"
-"Maximum of 5 services allowed per business"
-```
+The `ProductService` and `ServiceService` methods query active count before inserting. If the count is already ≥ 5, they reject with a validation error.
 
-### Ownership Constraint
-All write operations on businesses, gallery, products, and services verify:
-```typescript
-if (existing.ownerId !== ownerId) {
-  throw new Error("Forbidden: You do not own this business");
-}
-```
+### Max 10 Gallery Images
+`GalleryService` checks `countImages` before inserting. If the count is already ≥ 10, it throws a validation error.
 
-### Verification Status
+### Ownership Constraint & Admin Bypasses
+All write operations on businesses, gallery, products, and services verify that the `ownerId === profile.id`. However, if the active user role is `admin`, the ownership check is bypassed to allow administrative moderation.
+
+### Verification Status & Status Management
 - Default: `pending`
-- Admin can set to: `verified` or `rejected`
-- Only `verified` businesses appear in public search results
+- Admin can verify or reject a business listing.
+- Admin can set a business status to `active`, `inactive`, or `suspended` via `PATCH /v1/businesses/:id/status`.
 
-### Slug Uniqueness
-Both `business-categories` and `businesses` enforce unique slugs via pre-insert lookup. A `400` is returned if the slug already exists.
+### Category Validation
+Registering a business checks that the `categoryId` references a valid active business category.
 
-### UUID Parameter Validation
-All `/:id` routes on businesses, gallery, products, and services use the Zod `validateParamId` middleware:
-```typescript
-z.object({ id: z.string().uuid("Invalid UUID format") })
-```
-Non-UUID values return `400 Bad Request` before hitting the database.
+### Slug Auto-Generation
+If no category slug is provided on creation/update, it is automatically generated from the category name.
 
----
-
-## Database Tables
-
-| Table                  | Description                          |
-|------------------------|--------------------------------------|
-| `business_categories`  | Category taxonomy with soft-delete    |
-| `businesses`           | Core business profiles                |
-| `business_gallery`     | Image gallery per business            |
-| `business_products`    | Products listing (max 5)              |
-| `business_services`    | Services listing (max 5)              |
-| `verification_requests`| Admin verification audit log          |
-| `business_analytics`   | Aggregated interaction counters       |
-| `interaction_logs`     | Detailed per-click event logs         |
-
----
-
-## Analytics Click Actions
-
-Tracked via `POST /api/v1/business-analytics/:id/click`:
-
-```typescript
-z.enum(["profile_view", "phone_click", "whatsapp_click", "map_click"])
-```
-
-Each click:
-1. Writes a row to `interaction_logs` with IP + User-Agent
-2. Upserts aggregate counters in `business_analytics`
-
-Vendor retrieves totals via `GET /api/v1/business-analytics/:id/summary`
+### Field Masking (Public Details)
+Public business details fetched via `GET /v1/businesses/:id` use `findPublicById`, which excludes:
+- `ownerId`
+- `gstNumber`
+- `registrationNumber`
+- Internal verification metadata
 
 ---
 
 ## QA Test File
 
-E2E integration tests: [`scratch/test-businesses-e2e.ts`](../scratch/test-businesses-e2e.ts)
-
+E2E integration tests: [`apps/api/tests/business-e2e.test.ts`](../apps/api/tests/business-e2e.test.ts)
 Run with:
 ```bash
-~/.bun/bin/bun test ./scratch/test-businesses-e2e.ts
+~/.bun/bin/bun test tests/business-e2e.test.ts
 ```
