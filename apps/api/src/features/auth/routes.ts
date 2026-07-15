@@ -28,3 +28,4 @@ authRouter.post("/verify-otp", zValidator("json", verifyOtpSchema), (c) => contr
 // Protected Routes (Required Auth JWT)
 authRouter.post("/logout", authMiddleware, (c) => controller.logout(c));
 authRouter.get("/me", authMiddleware, (c) => controller.getMe(c));
+
