@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { authRouter } from "./features/auth/index.js";
-import { memberRouter } from "./features/member/index.js";
+import { memberRouter, branchRouter } from "./features/members/index.js";
 
 export const apiRouter = new Hono();
 
@@ -14,7 +14,8 @@ apiRouter.get("/v1", (c) => {
 
 // Register feature routers
 apiRouter.route("/v1/auth", authRouter);
-apiRouter.route("/v1/member", memberRouter);
+apiRouter.route("/v1/members", memberRouter);
+apiRouter.route("/v1/branches", branchRouter);
 
 // Future features will register here:
 // apiRouter.route("/v1/businesses", businessRouter);

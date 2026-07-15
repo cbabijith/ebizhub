@@ -112,8 +112,6 @@ export class MemberService {
     }
 
     await memberRepo.addSkill(memberRecord.id, skill);
-
-    // Return the updated profile
     return this.getOwnProfile(profileId);
   }
 
@@ -124,8 +122,36 @@ export class MemberService {
     }
 
     await memberRepo.removeSkill(memberRecord.id, skillId);
-
-    // Return the updated profile
     return this.getOwnProfile(profileId);
+  }
+
+  // Admin Operations
+  async verifyMember(targetProfileId: string, status: "verified" | "rejected") {
+    const memberRecord = await memberRepo.getMemberRecordByProfileId(targetProfileId);
+    if (!memberRecord) {
+      throw new Error("Member record not found");
+    }
+
+    await memberRepo.updateVerification(memberRecord.id, status);
+    return this.getOwnProfile(targetProfileId);
+  }
+
+  async suspendMember(targetProfileId: string) {
+    const memberRecord = await memberRepo.getMemberRecordByProfileId(targetProfileId);
+    if (!memberRecord) {
+      throw new Error("Member record not found");
+    }
+
+    await memberRepo.updateCommunityStatus(memberRecord.id, "suspended");
+    return this.getOwnProfile(targetProfileId);
+  }
+
+  // Branches
+  async getBranches() {
+    return await memberRepo.findBranches();
+  }
+
+  async getBranchMembers(branchId: string) {
+    return await memberRepo.findBranchMembers(branchId);
   }
 }

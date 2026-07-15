@@ -1,10 +1,9 @@
 import { db } from "../../config/database.js";
-import { profiles, members, memberSkills } from "../../database/schema.js";
+import { profiles, members, memberSkills, branches } from "../../database/schema.js";
 import { eq, and } from "drizzle-orm";
 
 export class MemberRepository {
   async findMemberByProfileId(profileId: string) {
-    // 1. Fetch profile and member base info
     const [result] = await db
       .select({
         id: profiles.id,
@@ -16,17 +15,24 @@ export class MemberRepository {
         role: profiles.role,
         status: profiles.status,
         membershipNumber: members.membershipNumber,
+        branchId: members.branchId,
+        branchName: branches.branchName,
+        branchNumber: branches.branchNumber,
         districtId: members.districtId,
         panchayatId: members.panchayatId,
         occupation: members.occupation,
         company: members.company,
         bio: members.bio,
         verificationStatus: members.verificationStatus,
+        communityStatus: members.communityStatus,
+        memberType: members.memberType,
+        joinedDate: members.joinedDate,
         createdAt: members.createdAt,
         updatedAt: members.updatedAt,
       })
       .from(profiles)
       .leftJoin(members, eq(profiles.id, members.profileId))
+      .leftJoin(branches, eq(members.branchId, branches.id))
       .where(eq(profiles.id, profileId));
 
     if (!result) return null;
@@ -37,7 +43,6 @@ export class MemberRepository {
       };
     }
 
-    // 2. Fetch associated skills
     const skills = await db
       .select({
         id: memberSkills.id,
@@ -65,10 +70,11 @@ export class MemberRepository {
       bio?: string | null;
       districtId?: number | null;
       panchayatId?: number | null;
+      branchId?: string | null;
+      memberType?: "regular" | "life" | "associate";
     }
   ) {
     return await db.transaction(async (tx) => {
-      // 1. Update profiles table
       if (Object.keys(profileData).length > 0) {
         await tx
           .update(profiles)
@@ -76,7 +82,6 @@ export class MemberRepository {
           .where(eq(profiles.id, profileId));
       }
 
-      // 2. Update members table
       if (Object.keys(memberData).length > 0) {
         await tx
           .update(members)
@@ -84,7 +89,6 @@ export class MemberRepository {
           .where(eq(members.profileId, profileId));
       }
 
-      // 3. Return the fully updated record (with skills)
       return this.findMemberByProfileId(profileId);
     });
   }
@@ -103,15 +107,22 @@ export class MemberRepository {
         avatar: profiles.avatar,
         role: profiles.role,
         membershipNumber: members.membershipNumber,
+        branchId: members.branchId,
+        branchName: branches.branchName,
+        branchNumber: branches.branchNumber,
         districtId: members.districtId,
         panchayatId: members.panchayatId,
         occupation: members.occupation,
         company: members.company,
         bio: members.bio,
         verificationStatus: members.verificationStatus,
+        communityStatus: members.communityStatus,
+        memberType: members.memberType,
+        joinedDate: members.joinedDate,
       })
       .from(profiles)
       .leftJoin(members, eq(profiles.id, members.profileId))
+      .leftJoin(branches, eq(members.branchId, branches.id))
       .where(eq(profiles.id, profileId));
 
     if (!result) return null;
@@ -163,5 +174,43 @@ export class MemberRepository {
       .where(and(eq(memberSkills.id, skillId), eq(memberSkills.memberId, memberRecordId)))
       .returning();
     return deletedSkill;
+  }
+
+  // Admin Methods
+  async updateVerification(memberRecordId: string, verificationStatus: "pending" | "verified" | "rejected") {
+    const [updated] = await db
+      .update(members)
+      .set({ verificationStatus, updatedAt: new Date() })
+      .where(eq(members.id, memberRecordId))
+      .returning();
+    return updated;
+  }
+
+  async updateCommunityStatus(memberRecordId: string, communityStatus: "active" | "inactive" | "suspended" | "expired" | "transferred") {
+    const [updated] = await db
+      .update(members)
+      .set({ communityStatus, updatedAt: new Date() })
+      .where(eq(members.id, memberRecordId))
+      .returning();
+    return updated;
+  }
+
+  // Branch Directory Queries
+  async findBranches() {
+    return await db.select().from(branches).orderBy(branches.branchName);
+  }
+
+  async findBranchMembers(branchId: string) {
+    return await db
+      .select({
+        id: profiles.id,
+        fullName: profiles.fullName,
+        avatar: profiles.avatar,
+        occupation: members.occupation,
+        company: members.company,
+      })
+      .from(profiles)
+      .innerJoin(members, eq(profiles.id, members.profileId))
+      .where(and(eq(members.branchId, branchId), eq(profiles.status, "active")));
   }
 }

@@ -9,6 +9,8 @@ export const updateProfileSchema = z.object({
   bio: z.string().max(1000, "Bio must be under 1000 characters").optional().nullable(),
   districtId: z.number().int().positive().optional().nullable(),
   panchayatId: z.number().int().positive().optional().nullable(),
+  branchId: z.string().uuid("Invalid branch ID format").optional().nullable(),
+  memberType: z.enum(["regular", "life", "associate"]).optional(),
 });
 
 export const addSkillSchema = z.object({

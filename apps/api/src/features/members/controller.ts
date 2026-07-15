@@ -74,17 +74,64 @@ export class MemberController {
         return errorResponse(c, "Image file is required", [], 400);
       }
 
-      // In a real S3 integration, this would upload to S3.
-      // For MVP, we mock the uploaded URL.
       const mockAvatarUrl = `https://supabase.co/storage/v1/object/public/avatars/${profile.id}_${Date.now()}_${file.name}`;
-      
-      const result = await memberService.updateOwnProfile(profile.id, {
-        avatar: mockAvatarUrl,
-      });
-
+      const result = await memberService.updateOwnProfile(profile.id, { avatar: mockAvatarUrl });
       return successResponse(c, "Avatar uploaded successfully", result);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to upload avatar", [err.message], 400);
+    }
+  }
+
+  // Admin Actions
+  async verifyMember(c: Context) {
+    try {
+      const id = c.req.param("id");
+      const { status } = await c.req.json();
+      if (!id || !status || !["verified", "rejected"].includes(status)) {
+        return errorResponse(c, "Valid ID and status (verified/rejected) are required", [], 400);
+      }
+
+      const result = await memberService.verifyMember(id, status);
+      return successResponse(c, `Member verification status updated to ${status}`, result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to verify member", [err.message], 400);
+    }
+  }
+
+  async suspendMember(c: Context) {
+    try {
+      const id = c.req.param("id");
+      if (!id) {
+        return errorResponse(c, "Member ID is required", [], 400);
+      }
+
+      const result = await memberService.suspendMember(id);
+      return successResponse(c, "Member status suspended successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to suspend member", [err.message], 400);
+    }
+  }
+
+  // Branch Directory Actions
+  async getBranches(c: Context) {
+    try {
+      const result = await memberService.getBranches();
+      return successResponse(c, "Branches retrieved successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to retrieve branches", [err.message], 400);
+    }
+  }
+
+  async getBranchMembers(c: Context) {
+    try {
+      const branchId = c.req.param("id");
+      if (!branchId) {
+        return errorResponse(c, "Branch ID is required", [], 400);
+      }
+      const result = await memberService.getBranchMembers(branchId);
+      return successResponse(c, "Branch members retrieved successfully", result);
+    } catch (err: any) {
+      return errorResponse(c, err.message || "Failed to retrieve branch members", [err.message], 400);
     }
   }
 }

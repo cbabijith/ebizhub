@@ -15,3 +15,4 @@ export * from "./schema/analytics";
 export * from "./schema/verification";
 export * from "./schema/settings";
 export * from "./schema/member-skills";
+export * from "./schema/branch";
