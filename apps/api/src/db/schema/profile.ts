@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
-import { authUsers } from "./auth.js";
+import { authUsers } from "./auth";
 
 export const profiles = pgTable("profiles", {
   id: uuid("id").primaryKey().references(() => authUsers.id, { onDelete: "cascade" }),

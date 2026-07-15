@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { profiles } from "./profile.js";
-import { districts } from "./district.js";
-import { panchayats } from "./panchayat.js";
+import { profiles } from "./profile";
+import { districts } from "./district";
+import { panchayats } from "./panchayat";
 
 export const members = pgTable("members", {
   id: uuid("id").defaultRandom().primaryKey(),
