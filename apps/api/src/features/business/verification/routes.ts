@@ -26,6 +26,12 @@ const validateParamId = zValidator("param", z.object({
 });
 
 verificationRouter.use(authMiddleware);
+
+// Vendor endpoints (require ownership verification inside service)
+verificationRouter.post("/:id/submit", validateParamId, (c) => controller.submit(c));
+verificationRouter.get("/:id", validateParamId, (c) => controller.getStatus(c));
+
+// Admin endpoints
 verificationRouter.use(requireRole(["admin"]));
 
 verificationRouter.post("/:id/verify", validateParamId, validateJson(verificationSchema), (c) => controller.verify(c));

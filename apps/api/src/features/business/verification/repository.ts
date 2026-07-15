@@ -42,4 +42,32 @@ export class VerificationRepository {
       .from(verificationRequests)
       .where(eq(verificationRequests.status, "pending"));
   }
+
+  async submitRequest(businessId: string, ownerId: string) {
+    return await db.transaction(async (tx) => {
+      await tx
+        .update(businesses)
+        .set({ verificationStatus: "pending", updatedAt: new Date() })
+        .where(eq(businesses.id, businessId));
+
+      const [log] = await tx
+        .insert(verificationRequests)
+        .values({
+          businessId,
+          submittedBy: ownerId,
+          status: "pending",
+        })
+        .returning();
+      return log;
+    });
+  }
+
+  async getVerificationHistory(businessId: string) {
+    return await db
+      .select()
+      .from(verificationRequests)
+      .where(eq(verificationRequests.businessId, businessId))
+      .orderBy(verificationRequests.createdAt);
+  }
 }
+

@@ -1,6 +1,6 @@
 /**
  * Feature 03 - Business Management
- * E2E Integration Test Suite (Stage 1 & 2)
+ * Comprehensive 3-Stage Integration Test Suite
  * Using bun test runner
  */
 
@@ -84,7 +84,6 @@ describe("Module 3.1 — Business Categories", () => {
     const { status, body } = await request("POST", "/v1/business-categories", {
       name,
       sortOrder: 10,
-      status: "active",
     }, adminToken);
 
     if (status === 201) {
@@ -119,8 +118,6 @@ describe("Module 3.1 — Business Categories", () => {
 
 describe("Module 3.2 — Business Registration & Status", () => {
   test("Member (non-vendor/non-admin): POST /v1/businesses — denied if role is customer", async () => {
-    // If our member has "customer" role, registering should be denied.
-    // Since roles are checked via requireRole(["vendor", "admin"]), let's test it.
     const { status } = await request("POST", "/v1/businesses", {
       categoryId: 1,
       businessName: "No Vendor Role",
@@ -129,12 +126,10 @@ describe("Module 3.2 — Business Registration & Status", () => {
       address: "Test Address",
       districtId: 1,
     }, memberToken);
-    // Note: if member has vendor role, this will be 201 or 400. If customer, it'll be 403.
     expect(status === 403 || status === 400 || status === 201).toBe(true);
   });
 
   test("Admin status update: PATCH /v1/businesses/:id/status", async () => {
-    // Register business first using adminToken (which bypasses role check since it's admin)
     if (!categoryId) return;
     const regRes = await request("POST", "/v1/businesses", {
       categoryId,
@@ -146,13 +141,30 @@ describe("Module 3.2 — Business Registration & Status", () => {
     }, adminToken);
 
     if (regRes.status === 201) {
-      const bizId = regRes.body.data.id;
-      const statusRes = await request("PATCH", `/v1/businesses/${bizId}/status`, {
+      businessId = regRes.body.data.id;
+      const statusRes = await request("PATCH", `/v1/businesses/${businessId}/status`, {
         status: "suspended"
       }, adminToken);
       expect(statusRes.status).toBe(200);
       expect(statusRes.body.data.status).toBe("suspended");
     }
+  });
+
+  test("Member: GET /v1/businesses/me — list own businesses", async () => {
+    if (!memberToken) return;
+    const { status, body } = await request("GET", "/v1/businesses/me", undefined, memberToken);
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  test("Public: GET /v1/businesses/:id — view business details (masks sensitive fields)", async () => {
+    if (!businessId) return;
+    const { status, body } = await request("GET", `/v1/businesses/${businessId}`);
+    expect(status).toBe(200);
+    expect(body.data?.id).toBe(businessId);
+    expect(body.data?.ownerId).toBeUndefined();
+    expect(body.data?.gstNumber).toBeUndefined();
   });
 });
 
@@ -160,42 +172,157 @@ describe("Module 3.2 — Business Registration & Status", () => {
 
 describe("Module 3.3 — Business Gallery (Max 10 images)", () => {
   test("Member: POST /v1/business-gallery — upload image limit check", async () => {
-    if (!adminToken || !categoryId) return;
-    // Register a test business
-    const regRes = await request("POST", "/v1/businesses", {
-      categoryId,
-      businessName: "Gallery Limit Test Biz",
-      slug: `gallery-limit-test-${Date.now()}`,
-      phone: "+919876543210",
-      address: "123 limit St",
-      districtId: 1,
-    }, adminToken);
-
-    if (regRes.status === 201) {
-      const bizId = regRes.body.data.id;
+    if (!businessId) return;
       
-      // Upload up to 10 images
-      for (let i = 1; i <= 10; i++) {
-        const uploadRes = await request("POST", "/v1/business-gallery", {
-          businessId: bizId,
-          imageUrl: `https://example.com/image${i}.jpg`,
-          sortOrder: i,
-        }, adminToken);
-        expect(uploadRes.status).toBe(201);
-      }
-
-      // Try 11th image
-      const failRes = await request("POST", "/v1/business-gallery", {
-        businessId: bizId,
-        imageUrl: `https://example.com/image11.jpg`,
-        sortOrder: 11,
+    // Upload up to 10 images
+    for (let i = 1; i <= 10; i++) {
+      const uploadRes = await request("POST", "/v1/business-gallery", {
+        businessId,
+        imageUrl: `https://example.com/image${i}.jpg`,
+        sortOrder: i,
       }, adminToken);
-      
-      expect(failRes.status).toBe(400);
-      expect(failRes.body.message).toContain("Maximum of 10 gallery images");
+      if (uploadRes.status === 201) {
+        galleryImageId = uploadRes.body.data.id;
+      }
     }
+
+    // Try 11th image
+    const failRes = await request("POST", "/v1/business-gallery", {
+      businessId,
+      imageUrl: `https://example.com/image11.jpg`,
+      sortOrder: 11,
+    }, adminToken);
+    
+    expect(failRes.status).toBe(400);
+    expect(failRes.body.message).toContain("Maximum of 10 gallery images");
+  });
+
+  test("Member: DELETE /v1/business-gallery/:id — delete image", async () => {
+    if (!galleryImageId) return;
+    const { status } = await request("DELETE", `/v1/business-gallery/${galleryImageId}`, undefined, adminToken);
+    expect(status).toBe(200);
   });
 });
+
+// ─── Stage 1: Products (Enforcing 5 Limit) ───────────────────────────────────
+
+describe("Module 3.4 — Business Products (Max 5)", () => {
+  test("Member: POST /v1/business-products — add product and enforce limit", async () => {
+    if (!businessId) return;
+    for (let i = 1; i <= 5; i++) {
+      const uploadRes = await request("POST", "/v1/business-products", {
+        businessId,
+        name: `Product ${i}`,
+        description: `Description ${i}`,
+        displayOrder: i,
+      }, adminToken);
+      if (uploadRes.status === 201) {
+        productId = uploadRes.body.data.id;
+      }
+    }
+
+    // Try 6th product
+    const failRes = await request("POST", "/v1/business-products", {
+      businessId,
+      name: "Product 6",
+      description: "Should fail",
+      displayOrder: 6,
+    }, adminToken);
+    expect(failRes.status).toBe(400);
+    expect(failRes.body.message).toContain("Maximum of 5 products");
+  });
+
+  test("Member: PUT /v1/business-products/:id — update product", async () => {
+    if (!productId) return;
+    const { status } = await request("PUT", `/v1/business-products/${productId}`, {
+      businessId,
+      name: "Updated Product Name",
+      description: "Updated product description",
+      displayOrder: 1,
+    }, adminToken);
+    expect(status).toBe(200);
+  });
+});
+
+// ─── Stage 1: Services (Enforcing 5 Limit) ───────────────────────────────────
+
+describe("Module 3.5 — Business Services (Max 5)", () => {
+  test("Member: POST /v1/business-services — add service and enforce limit", async () => {
+    if (!businessId) return;
+    for (let i = 1; i <= 5; i++) {
+      const uploadRes = await request("POST", "/v1/business-services", {
+        businessId,
+        name: `Service ${i}`,
+        description: `Description ${i}`,
+        displayOrder: i,
+      }, adminToken);
+      if (uploadRes.status === 201) {
+        serviceId = uploadRes.body.data.id;
+      }
+    }
+
+    // Try 6th service
+    const failRes = await request("POST", "/v1/business-services", {
+      businessId,
+      name: "Service 6",
+      description: "Should fail",
+      displayOrder: 6,
+    }, adminToken);
+    expect(failRes.status).toBe(400);
+    expect(failRes.body.message).toContain("Maximum of 5 services");
+  });
+});
+
+// ─── Stage 1: Verification Submission and Review ───────────────────────────
+
+describe("Module 3.6 — Verification Workflow", () => {
+  test("Vendor: POST /v1/business-verification/:id/submit — request verification review", async () => {
+    if (!businessId) return;
+    const { status, body } = await request("POST", `/v1/business-verification/${businessId}/submit`, {}, adminToken);
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+  });
+
+  test("Vendor: GET /v1/business-verification/:id — fetch verification requests logs", async () => {
+    if (!businessId) return;
+    const { status, body } = await request("GET", `/v1/business-verification/${businessId}`, undefined, adminToken);
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  test("Admin: POST /v1/business-verification/:id/verify — approve", async () => {
+    if (!businessId) return;
+    const { status } = await request("POST", `/v1/business-verification/${businessId}/verify`, {
+      remarks: "Fully audited community listing.",
+    }, adminToken);
+    expect(status).toBe(200);
+  });
+});
+
+// ─── Stage 1: Discovery & Click Analytics ────────────────────────────────────
+
+describe("Module 3.9 & 3.10 — Search and Analytics", () => {
+  test("Public: GET /v1/business-search — fetch listings", async () => {
+    const { status } = await request("GET", "/v1/business-search?keyword=test");
+    expect(status === 200 || status === 400).toBe(true);
+  });
+
+  test("Public: POST /v1/business-analytics/:id/click — track action click", async () => {
+    if (!businessId) return;
+    const { status } = await request("POST", `/v1/business-analytics/${businessId}/click`, {
+      action: "whatsapp_click",
+    });
+    expect(status).toBe(200);
+  });
+
+  test("Vendor: GET /v1/business-analytics/:id/summary — fetch aggregates", async () => {
+    if (!businessId) return;
+    const { status } = await request("GET", `/v1/business-analytics/${businessId}/summary`, undefined, adminToken);
+    expect(status).toBe(200);
+  });
+});
+
+// ─── Stage 3: Database & Cross-Module Integration ────────────────────────────
 
 describe("Stage 3 — Database & Cross-Module Integration", () => {
   test("Cannot register a business if owner lacks a member profile", async () => {

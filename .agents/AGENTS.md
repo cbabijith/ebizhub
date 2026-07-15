@@ -35,7 +35,7 @@ When modifying or building features for the client apps or backend:
 ---
 
 ## 3. Workflow Constraints
-- Always perform local validation/compilation after modifying TypeScript files by running `npx pnpm --filter api build`.
+- Always perform local validation/compilation after modifying TypeScript files by running `bun run tsc --noEmit` or `bun run build`.
 - Avoid triggering native builders like `turbo` if they SIGSEGV in sandbox environment; build packages directly.
 - **README Updates**: After completing any task or implementing a change, always update the project `README.md` to reflect the latest changes, features, or architectural adjustments.
 
