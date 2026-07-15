@@ -2,56 +2,11 @@
 
 EzhavaClub is a community-based digital platform designed to connect businesses, service providers, and professionals within a specific community. It serves as a centralized hub where community members can register, discover local services, and network.
 
-## Project Overview
-
-The primary goal of EzhavaClub is to boost community commerce and connectivity. Vendors can showcase their offerings, while customers can easily find, contact, and navigate to local businesses.
-
-## Business Modules & Features
-
-### 🛡️ 1. Onboarding & Verification Module
-*   **Vendor Registration**: Vendors can register their profiles, upload business descriptions, specify physical addresses, and provide contact details.
-*   **Admin Vetting Pipeline**: All vendor submissions are initially marked as *Unverified*. They must be approved/vetted by an Admin before they appear in the public feeds.
-*   **Authentication**: Secure authentication and identity flows powered by Supabase Auth.
-
-### 📋 2. Business Profile & Directory Module
-*   **Search & Discovery**: Customers can search and filter through the public business directory on `user-web` and `user-app`.
-*   **Directory Listings**: Displays verified vendor business information (business name, description, category, and locations).
-
-### 🛍️ 3. Catalog & Showcase Module
-*   **Strict Listing Limits**: Vendors can add their products or services up to a **maximum of 5 items** to maintain quality and highlight core offerings.
-*   **Product/Service Details**: Allows adding title, description, and key features for each of the 5 allowed items.
-
-### 📞 4. Direct Customer Engagement Module
-Allows customers to connect directly with the vendor with one click:
-*   **Direct Dial**: Click-to-call vendor phone number.
-*   **WhatsApp Chat**: Click-to-chat with a pre-filled WhatsApp message indicating interest.
-*   **Google Maps Navigation**: Click-to-open map location for direct navigation to the physical store.
-
-### 📊 5. Analytics & Interaction Tracking Module
-Automatically tracks interactions in the database to compile reports:
-*   **Profile Views**: Incremented every time a customer views a vendor profile.
-*   **CTA Clicks**: Logged every time a customer clicks on the Call, WhatsApp, or Google Map buttons.
-*   **Vendor Dashboard**: Displays views and click metrics to vendors so they can measure customer interest.
-*   **Admin Dashboard**: Aggregates platform-wide engagement, vendor sign-ups, and activity logs.
-
 ---
 
-## Detailed Functions by User Role
-
-### 👑 Platform Administrators (Admin)
-*   **Approve/Reject Listings**: Manage the verification queue for new vendor registration profiles.
-*   **Audit Catalog Limits**: Enforce that vendors do not exceed the 5-item catalog limit.
-*   **Monitor Analytics**: Access system-wide tracking logs for clicks, views, and sign-ups.
-
-### 🏪 Vendors / Members
-*   **Profile Management**: Update shop metadata, contact details, operating hours, and location.
-*   **Catalog Management**: Add, edit, or remove up to 5 showcase services/products.
-*   **View Shop Analytics**: Review the performance of their listings (how many customers called, clicked WhatsApp, or requested Map directions).
-
-### 👥 End Customers
-*   **Browse & Filter**: Find verified community businesses by service category or location.
-*   **Get Directions**: Navigate to a shop directly using the built-in Google Maps link.
-*   **Instant Connection**: Call the vendor or message them on WhatsApp with one click.
+# Phase 1 (MVP) Goal
+The core focus for Phase 1 is simple:
+> **Connect Ezhava community members with verified businesses and service providers in a simple, trusted platform.**
 
 ---
 
@@ -97,12 +52,116 @@ ebizhub/
 
 ---
 
-## Prerequisites
+# EBizHub – Phase 1 Modules Spec
 
-- **Node.js**: `>= 18.0.0`
-- **pnpm**: `>= 9.0.0` (Recommended)
-- **Flutter**: `>= 3.0.0`
-- **Dart**: `>= 3.0.0`
+### 🔐 1. Authentication & User Management
+*   **Authentication Flows**: Mobile OTP Login, Email Login, Registration, Forgot Password.
+*   **Role Management**:
+    *   **Admin**: System administrators.
+    *   **Vendor**: Business owners and service providers.
+    *   **Customer**: General community consumers.
+*   **Profile Integration**: User Profile Completion and Account Verification states.
+
+### 👤 2. Member Profile Module
+Every community member gets a profile containing:
+*   **Personal Details**: Name, Photo, Mobile, Email, District, Panchayat / Municipality, Address.
+*   **Professional Details**: Occupation, Company, Skills, About/Bio.
+*   **Community Details**: Membership ID (Optional), Verification Status.
+
+### 🏢 3. Business Registration Module
+*   **Business Info**: Business Name, Category, Description, Logo, Cover Image.
+*   **Contact Details**: Phone, WhatsApp, Email, Website.
+*   **Location Coordinates**: Physical Address, Google Maps Location Link.
+*   **Metadata**: Working Hours, Established Year, GST Number (Optional).
+*   **Vetting States**: Pending, Approved, Rejected.
+
+### 🛠️ 4. Service Provider Module
+For individual professionals (e.g., Electricians, Plumbers, Lawyers, Doctors, Developers, Marketers, Photographers):
+*   **Professional Meta**: Profession, Years of Experience, Skills, Portfolio Gallery, Service Area coverage, Direct Contact channels.
+
+### 🖼️ 5. Business Showcase Module
+*   **Strict Limitations**: Every business profile is capped at a **maximum of 5 Services** and a **maximum of 5 Products**.
+*   **Item Content**: Image/Photo, Name, Detailed Description.
+
+### 📋 6. Directory Module
+*   **Browse Businesses by**: Category, District, Location.
+*   **Browse Professionals by**: Profession, Location.
+
+### 🔍 7. Global Search Module
+*   **Unified Search Index**: Search everything (Businesses, Service Providers, Categories) with autocomplete/instant results.
+
+### 📄 8. Business Detail Page
+*   **Showcase layout**: Displays Logo, Gallery, Description, Contacts, Working Hours, Maps Link, and the list of up to 5 Products & Services.
+*   **Instant Customer CTAs**: Call, WhatsApp Message, Google Maps Navigation.
+
+### 📊 9. Interaction Tracking Module
+Automatically logs metrics in the database:
+*   Business/Profile Views
+*   Phone click counts
+*   WhatsApp redirect clicks
+*   Google Maps navigation clicks
+
+### 📈 10. Vendor Dashboard
+*   **Insights**: Profile Status, Verification Badge Status, Page Views, Phone click analytics, WhatsApp click analytics, Map click analytics.
+*   **Management Controls**: Manage Business Profile details, Products, and Services.
+
+### 👑 11. Admin Dashboard
+Allows administrators to manage:
+*   Users & Roles
+*   Business registrations & Vetting queue
+*   Service Providers listings
+*   Directory categories
+*   Vetting Approvals/Rejections
+*   System-wide analytics and reports
+
+### 🛡️ 12. Verification Module
+*   Approve or Reject Businesses and Professionals.
+*   Enforces/displays the **Verified** vs. **Unverified** badge status.
+
+### 🏷️ 13. Category Management
+*   **Business Categories**: Grocery, Hotel, Medical, Printing, Electronics, etc.
+*   **Service Categories**: Electrician, Plumber, Advocate, Accountant, Developer, etc.
+
+### ⚙️ 14. Settings Module
+*   Business Settings
+*   Notification Settings
+*   Privacy and Password reset controls.
+
+---
+
+# Phase 1 Database Entities
+
+*   **Users** (Auth profiles)
+*   **Member Profiles** (Community profile details)
+*   **Businesses** (Shops and commercial entities)
+*   **Business Categories** (Taxonomy)
+*   **Service Providers** (Freelancers and professionals)
+*   **Service Categories** (Taxonomy)
+*   **Products** (Catalog items - max 5 per business)
+*   **Services** (Catalog items - max 5 per business)
+*   **Business Gallery** (Media assets)
+*   **Business Locations** (Addresses and map links)
+*   **Analytics** (Interaction tracking logs)
+*   **Verification Requests** (Approval requests backlog)
+
+---
+
+# Phase 1 Application Modules
+
+### 📱 User App (Flutter)
+*   Browse verified directory, run searches, view profiles, and access Call / WhatsApp / Maps CTAs.
+
+### 📱 Vendor App (Flutter)
+*   Register businesses, manage profiles, maintain up to 5 services/products, and view dashboard analytics.
+
+### 💻 User Web (Next.js)
+*   Public-facing directory site, unified search, and business profile/showcase pages.
+
+### 💻 Admin Web (Next.js)
+*   Verification dashboard, category taxonomy control, analytics logs, and user role management.
+
+### 🔌 API Backend (Hono)
+*   REST APIs, Authentication wrappers, business operations, unified search query handlers, analytics aggregation, and admin verification endpoints.
 
 ---
 
