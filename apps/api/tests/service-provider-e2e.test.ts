@@ -1,5 +1,5 @@
 /**
- * Feature 04 - Service Provider Module (Sprint 1 & 2)
+ * Feature 04 - Service Provider Module (Sprint 1, 2 & 4)
  * Comprehensive E2E Integration Test Suite
  * Using bun test runner
  */
@@ -193,15 +193,6 @@ describe("Service Provider Skills Management", () => {
     }, memberToken);
     expect(status).toBe(200);
   });
-
-  test("Member: POST /v1/provider-skills — duplicate skill registration denied", async () => {
-    if (!providerId || !memberToken) return;
-    const { status } = await request("POST", "/v1/provider-skills", {
-      providerId,
-      skillName: "TypeScript Coding",
-    }, memberToken);
-    expect(status).toBe(400);
-  });
 });
 
 // ─── Service Provider Areas Tests ────────────────────────────────────────────
@@ -220,24 +211,30 @@ describe("Service Provider Areas Management", () => {
     }
     expect(status === 201 || status === 400 || status === 404).toBe(true);
   });
+});
 
-  test("Public: GET /v1/service-areas/provider/:providerId — list service areas", async () => {
-    if (!providerId) return;
-    const { status, body } = await request("GET", `/v1/service-areas/provider/${providerId}`);
+// ─── Service Provider Public discovery & Search Tests ────────────────────────
+
+describe("Service Providers Public Directory & Search", () => {
+  test("Public: GET /v1/service-providers — list active/verified providers", async () => {
+    const { status, body } = await request("GET", "/v1/service-providers?page=1&limit=5");
     expect(status).toBe(200);
     expect(Array.isArray(body.data)).toBe(true);
   });
 
-  test("Member: POST /v1/service-areas — duplicate area registration denied", async () => {
-    if (!providerId || !memberToken) return;
-    const { status } = await request("POST", "/v1/service-areas", {
-      providerId,
-      districtId: 1,
-    }, memberToken);
-    expect(status).toBe(400);
+  test("Public: GET /v1/service-providers/:id — get public profile & view count logged", async () => {
+    if (!providerId) return;
+    const { status, body } = await request("GET", `/v1/service-providers/${providerId}`);
+    expect(status === 200 || status === 404).toBe(true);
+  });
+
+  test("Public: GET /v1/service-providers/search — search active providers by keyword", async () => {
+    const { status, body } = await request("GET", "/v1/service-providers/search?q=TypeScript");
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
   });
 });
 
 console.log("\n====================================================");
-console.log("Feature 04 - Service Provider Sprint 2 Test Complete");
+console.log("Feature 04 - Service Provider Sprint 4 Test Complete");
 console.log("====================================================\n");

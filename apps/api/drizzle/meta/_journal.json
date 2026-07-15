@@ -22,6 +22,13 @@
       "when": 1784109214471,
       "tag": "0002_nasty_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784119941764,
+      "tag": "0003_hot_power_man",
+      "breakpoints": true
     }
   ]
 }
