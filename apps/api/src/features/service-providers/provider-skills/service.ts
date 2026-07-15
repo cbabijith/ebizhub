@@ -12,7 +12,9 @@ export class SkillService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     // Duplicate check
@@ -36,7 +38,9 @@ export class SkillService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     if (data.skillName && data.skillName !== skill.skillName) {
@@ -61,7 +65,9 @@ export class SkillService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await skillRepo.delete(id);

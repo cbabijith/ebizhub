@@ -1,6 +1,6 @@
 import { db } from "../../../config/database.js";
 import { serviceProviderSkills } from "../../../database/schema.js";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export class SkillRepository {
   async create(data: any) {
@@ -12,18 +12,25 @@ export class SkillRepository {
     const [result] = await db
       .update(serviceProviderSkills)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(serviceProviderSkills.id, id))
+      .where(and(eq(serviceProviderSkills.id, id), isNull(serviceProviderSkills.deletedAt)))
       .returning();
     return result;
   }
 
   async delete(id: string) {
-    const [result] = await db.delete(serviceProviderSkills).where(eq(serviceProviderSkills.id, id)).returning();
+    const [result] = await db
+      .update(serviceProviderSkills)
+      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .where(eq(serviceProviderSkills.id, id))
+      .returning();
     return result;
   }
 
   async findById(id: string) {
-    const [result] = await db.select().from(serviceProviderSkills).where(eq(serviceProviderSkills.id, id));
+    const [result] = await db
+      .select()
+      .from(serviceProviderSkills)
+      .where(and(eq(serviceProviderSkills.id, id), isNull(serviceProviderSkills.deletedAt)));
     return result;
   }
 
@@ -31,14 +38,20 @@ export class SkillRepository {
     return await db
       .select()
       .from(serviceProviderSkills)
-      .where(eq(serviceProviderSkills.providerId, providerId));
+      .where(and(eq(serviceProviderSkills.providerId, providerId), isNull(serviceProviderSkills.deletedAt)));
   }
 
   async findByProviderAndName(providerId: string, skillName: string) {
     const [result] = await db
       .select()
       .from(serviceProviderSkills)
-      .where(and(eq(serviceProviderSkills.providerId, providerId), eq(serviceProviderSkills.skillName, skillName)));
+      .where(
+        and(
+          eq(serviceProviderSkills.providerId, providerId),
+          eq(serviceProviderSkills.skillName, skillName),
+          isNull(serviceProviderSkills.deletedAt)
+        )
+      );
     return result;
   }
 }

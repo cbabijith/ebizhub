@@ -24,7 +24,7 @@ export class ProviderController {
       const result = await providerService.updateProvider(id, profile.id, profile.role, body);
       return successResponse(c, "Service provider updated successfully", result);
     } catch (err: any) {
-      const status = err.message === "Service provider not found" ? 404 : 400;
+      const status = err.message === "Service provider not found" ? 404 : (err.statusCode || 400);
       return errorResponse(c, err.message || "Failed to update provider", [err.message], status);
     }
   }
@@ -57,7 +57,7 @@ export class ProviderController {
       const result = await providerService.deleteProvider(id, profile.id, profile.role);
       return successResponse(c, "Service provider profile deleted successfully", result);
     } catch (err: any) {
-      const status = err.message === "Service provider not found" ? 404 : 400;
+      const status = err.message === "Service provider not found" ? 404 : (err.statusCode || 400);
       return errorResponse(c, err.message || "Failed to delete provider", [err.message], status);
     }
   }

@@ -13,7 +13,7 @@ export class AreaController {
       return successResponse(c, "Service area added successfully", result, 201);
     } catch (err: any) {
       const isNotFound = ["Service provider not found", "District not found", "Panchayat not found"].includes(err.message);
-      const status = isNotFound ? 404 : 400;
+      const status = isNotFound ? 404 : (err.statusCode || 400);
       return errorResponse(c, err.message || "Failed to add service area", [err.message], status);
     }
   }
@@ -29,7 +29,7 @@ export class AreaController {
       return successResponse(c, "Service area removed successfully", result);
     } catch (err: any) {
       const isNotFound = ["Service area not found", "Service provider not found"].includes(err.message);
-      const status = isNotFound ? 404 : 400;
+      const status = isNotFound ? 404 : (err.statusCode || 400);
       return errorResponse(c, err.message || "Failed to remove service area", [err.message], status);
     }
   }

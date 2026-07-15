@@ -14,6 +14,14 @@ export class ServiceCategoryService {
     return await categoryRepo.findAll();
   }
 
+  async getCategoryById(id: number) {
+    const category = await categoryRepo.findById(id);
+    if (!category) {
+      throw new Error("Category not found");
+    }
+    return category;
+  }
+
   async createCategory(data: any) {
     // Duplicate name check
     const existingName = await categoryRepo.findByName(data.name);

@@ -15,7 +15,9 @@ export class AreaService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     // Verify district exists
@@ -53,7 +55,9 @@ export class AreaService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await areaRepo.delete(id);

@@ -45,7 +45,9 @@ export class ProviderService {
 
     // Ownership check (unless admin)
     if (userRole !== "admin" && existing.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     // Category existence check if updated
@@ -92,7 +94,9 @@ export class ProviderService {
 
     // Ownership check (unless admin)
     if (userRole !== "admin" && existing.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await providerRepo.softDelete(id);

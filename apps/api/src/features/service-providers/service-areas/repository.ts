@@ -9,12 +9,19 @@ export class AreaRepository {
   }
 
   async delete(id: number) {
-    const [result] = await db.delete(serviceProviderAreas).where(eq(serviceProviderAreas.id, id)).returning();
+    const [result] = await db
+      .update(serviceProviderAreas)
+      .set({ deletedAt: new Date() })
+      .where(eq(serviceProviderAreas.id, id))
+      .returning();
     return result;
   }
 
   async findById(id: number) {
-    const [result] = await db.select().from(serviceProviderAreas).where(eq(serviceProviderAreas.id, id));
+    const [result] = await db
+      .select()
+      .from(serviceProviderAreas)
+      .where(and(eq(serviceProviderAreas.id, id), isNull(serviceProviderAreas.deletedAt)));
     return result;
   }
 
@@ -32,7 +39,7 @@ export class AreaRepository {
       .from(serviceProviderAreas)
       .leftJoin(districts, eq(serviceProviderAreas.districtId, districts.id))
       .leftJoin(panchayats, eq(serviceProviderAreas.panchayatId, panchayats.id))
-      .where(eq(serviceProviderAreas.providerId, providerId));
+      .where(and(eq(serviceProviderAreas.providerId, providerId), isNull(serviceProviderAreas.deletedAt)));
   }
 
   async findByProviderAndLocation(providerId: string, districtId: number, panchayatId: number | null) {
@@ -43,7 +50,8 @@ export class AreaRepository {
         and(
           eq(serviceProviderAreas.providerId, providerId),
           eq(serviceProviderAreas.districtId, districtId),
-          panchayatId ? eq(serviceProviderAreas.panchayatId, panchayatId) : isNull(serviceProviderAreas.panchayatId)
+          panchayatId ? eq(serviceProviderAreas.panchayatId, panchayatId) : isNull(serviceProviderAreas.panchayatId),
+          isNull(serviceProviderAreas.deletedAt)
         )
       );
     return result;

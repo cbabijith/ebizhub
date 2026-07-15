@@ -23,6 +23,20 @@ export class ServiceCategoryController {
     }
   }
 
+  async getById(c: Context) {
+    try {
+      const id = parseInt(c.req.param("id") || "0", 10);
+      if (isNaN(id)) {
+        return errorResponse(c, "Invalid category ID", [], 400);
+      }
+      const result = await categoryService.getCategoryById(id);
+      return successResponse(c, "Category retrieved successfully", result);
+    } catch (err: any) {
+      const status = err.message === "Category not found" ? 404 : 400;
+      return errorResponse(c, err.message || "Failed to retrieve category", [err.message], status);
+    }
+  }
+
   async create(c: Context) {
     try {
       const body = c.req.valid("json" as never) as any;

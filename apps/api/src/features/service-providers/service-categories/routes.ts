@@ -27,7 +27,7 @@ const validateParamId = zValidator("param", z.object({
 
 // Public routes
 serviceCategoriesRouter.get("/", (c) => controller.getActive(c));
-serviceCategoriesRouter.get("/:id", validateParamId, (c) => controller.getAll(c)); // get single active/detail if needed, or mapping controller.getAll
+serviceCategoriesRouter.get("/:id", validateParamId, (c) => controller.getById(c));
 
 // Protected routes (Admin only)
 serviceCategoriesRouter.use(authMiddleware);

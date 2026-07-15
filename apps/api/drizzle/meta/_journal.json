@@ -29,6 +29,13 @@
       "when": 1784119941764,
       "tag": "0003_hot_power_man",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784121111895,
+      "tag": "0004_vengeful_vindicator",
+      "breakpoints": true
     }
   ]
 }

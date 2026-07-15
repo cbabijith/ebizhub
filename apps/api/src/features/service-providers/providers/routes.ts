@@ -34,7 +34,7 @@ providersRouter.get("/:id", validateParamId, (c) => controller.getById(c));
 // Protected routes (Authenticated members)
 providersRouter.use(authMiddleware);
 
-providersRouter.post("/", validateJson(createProviderSchema), (c) => controller.register(c));
+providersRouter.post("/", requireRole(["vendor", "admin"]), validateJson(createProviderSchema), (c) => controller.register(c));
 providersRouter.put("/:id", validateParamId, validateJson(updateProviderSchema), (c) => controller.update(c));
 providersRouter.delete("/:id", validateParamId, (c) => controller.delete(c));
 

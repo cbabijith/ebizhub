@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, integer, timestamp, index } from "drizzle-orm/pg-core";
 import { serviceProviders } from "./service-provider.js";
 
 export const serviceProviderSkills = pgTable("service_provider_skills", {
@@ -9,4 +9,9 @@ export const serviceProviderSkills = pgTable("service_provider_skills", {
   proficiencyLevel: text("proficiency_level"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+}, (table) => {
+  return {
+    skillNameIdx: index("sp_skills_name_idx").on(table.skillName),
+  };
 });

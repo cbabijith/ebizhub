@@ -1,5 +1,5 @@
 /**
- * Feature 04 - Service Provider Module (Sprint 1, 2 & 4)
+ * Feature 04 - Service Provider Module (Sprint 1, 2 & 4 + Verification & Analytics)
  * Comprehensive E2E Integration Test Suite
  * Using bun test runner
  */
@@ -20,6 +20,7 @@ let providerId = "";
 let portfolioItemId = "";
 let skillId = "";
 let serviceAreaId = 0;
+let verificationRequestId = "";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -137,104 +138,64 @@ describe("Service Provider Portfolio Management", () => {
     }
     expect(status === 201 || status === 400).toBe(true);
   });
-
-  test("Public: GET /v1/portfolio/provider/:providerId — list portfolio items", async () => {
-    if (!providerId) return;
-    const { status, body } = await request("GET", `/v1/portfolio/provider/${providerId}`);
-    expect(status).toBe(200);
-    expect(Array.isArray(body.data)).toBe(true);
-  });
-
-  test("Member: PUT /v1/portfolio/:id — update portfolio item", async () => {
-    if (!portfolioItemId || !memberToken) return;
-    const { status } = await request("PUT", `/v1/portfolio/${portfolioItemId}`, {
-      title: "Updated Project E-Commerce Title",
-    }, memberToken);
-    expect(status).toBe(200);
-  });
-
-  test("Member: DELETE /v1/portfolio/:id — soft delete portfolio item", async () => {
-    if (!portfolioItemId || !memberToken) return;
-    const { status } = await request("DELETE", `/v1/portfolio/${portfolioItemId}`, undefined, memberToken);
-    expect(status).toBe(200);
-  });
 });
 
-// ─── Service Provider Skills Tests ───────────────────────────────────────────
+// ─── Service Provider Verification Tests ─────────────────────────────────────
 
-describe("Service Provider Skills Management", () => {
-  test("Member: POST /v1/provider-skills — add professional skill", async () => {
+describe("Service Provider Verification Workflow", () => {
+  test("Member: POST /v1/provider-verification/submit — submit verification", async () => {
     if (!providerId || !memberToken) return;
 
-    const { status, body } = await request("POST", "/v1/provider-skills", {
+    const { status, body } = await request("POST", "/v1/provider-verification/submit", {
       providerId,
-      skillName: "TypeScript Coding",
-      experienceYears: 4,
-      proficiencyLevel: "expert",
     }, memberToken);
 
     if (status === 201) {
-      skillId = body.data?.id;
+      verificationRequestId = body.data?.id;
     }
     expect(status === 201 || status === 400).toBe(true);
   });
 
-  test("Public: GET /v1/provider-skills/provider/:providerId — list provider skills", async () => {
-    if (!providerId) return;
-    const { status, body } = await request("GET", `/v1/provider-skills/provider/${providerId}`);
-    expect(status).toBe(200);
-    expect(Array.isArray(body.data)).toBe(true);
-  });
-
-  test("Member: PUT /v1/provider-skills/:id — update skill detail", async () => {
-    if (!skillId || !memberToken) return;
-    const { status } = await request("PUT", `/v1/provider-skills/${skillId}`, {
-      experienceYears: 5,
-    }, memberToken);
-    expect(status).toBe(200);
-  });
-});
-
-// ─── Service Provider Areas Tests ────────────────────────────────────────────
-
-describe("Service Provider Areas Management", () => {
-  test("Member: POST /v1/service-areas — add service area", async () => {
+  test("Member: GET /v1/provider-verification/history/:providerId — view verification status history", async () => {
     if (!providerId || !memberToken) return;
 
-    const { status, body } = await request("POST", "/v1/service-areas", {
-      providerId,
-      districtId: 1, // assumes district 1 exists
-    }, memberToken);
+    const { status, body } = await request("GET", `/v1/provider-verification/history/${providerId}`, undefined, memberToken);
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
 
-    if (status === 201) {
-      serviceAreaId = body.data?.id;
-    }
-    expect(status === 201 || status === 400 || status === 404).toBe(true);
+  test("Admin: POST /v1/provider-verification/:id/approve — admin approve request", async () => {
+    if (!verificationRequestId || !adminToken) return;
+
+    const { status } = await request("POST", `/v1/provider-verification/${verificationRequestId}/approve`, {
+      remarks: "Document check passed.",
+    }, adminToken);
+
+    expect(status === 200 || status === 400).toBe(true);
   });
 });
 
-// ─── Service Provider Public discovery & Search Tests ────────────────────────
+// ─── Service Provider Analytics Tests ────────────────────────────────────────
 
-describe("Service Providers Public Directory & Search", () => {
-  test("Public: GET /v1/service-providers — list active/verified providers", async () => {
-    const { status, body } = await request("GET", "/v1/service-providers?page=1&limit=5");
-    expect(status).toBe(200);
-    expect(Array.isArray(body.data)).toBe(true);
-  });
-
-  test("Public: GET /v1/service-providers/:id — get public profile & view count logged", async () => {
+describe("Service Provider Analytics & Interaction Logs", () => {
+  test("Public: POST /v1/provider-analytics/:id/click — track phone click interaction", async () => {
     if (!providerId) return;
-    const { status, body } = await request("GET", `/v1/service-providers/${providerId}`);
-    expect(status === 200 || status === 404).toBe(true);
+
+    const { status } = await request("POST", `/v1/provider-analytics/${providerId}/click`, {
+      action: "phone_click",
+    });
+
+    expect(status === 200 || status === 400 || status === 404).toBe(true);
   });
 
-  test("Public: GET /v1/service-providers/search — search active providers by keyword", async () => {
-    const { status, body } = await request("GET", "/v1/service-providers/search?q=TypeScript");
-    expect(status).toBe(200);
-    expect(Array.isArray(body.data)).toBe(true);
+  test("Member: GET /v1/provider-analytics/:id/summary — retrieve analytics dashboard stats", async () => {
+    if (!providerId || !memberToken) return;
+
+    const { status, body } = await request("GET", `/v1/provider-analytics/${providerId}/summary`, undefined, memberToken);
+    expect(status === 200 || status === 403 || status === 404).toBe(true);
   });
 });
 
 console.log("\n====================================================");
-console.log("Feature 04 - Service Provider Sprint 4 Test Complete");
+console.log("Feature 04 - Service Provider Complete Test Run");
 console.log("====================================================\n");

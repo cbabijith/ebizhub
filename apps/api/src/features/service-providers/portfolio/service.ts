@@ -16,7 +16,9 @@ export class PortfolioService {
 
     // Ownership check
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     // Enforce 10 items limit
@@ -40,7 +42,9 @@ export class PortfolioService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await portfolioRepo.update(id, data);
@@ -58,7 +62,9 @@ export class PortfolioService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await portfolioRepo.softDelete(id);
@@ -71,7 +77,9 @@ export class PortfolioService {
     }
 
     if (userRole !== "admin" && provider.profileId !== profileId) {
-      throw new Error("Forbidden: You do not own this service provider profile");
+      const err = new Error("Forbidden: You do not own this service provider profile");
+      (err as any).statusCode = 403;
+      throw err;
     }
 
     return await db.transaction(async (tx) => {

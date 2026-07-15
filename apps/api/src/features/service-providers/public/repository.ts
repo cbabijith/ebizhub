@@ -93,8 +93,11 @@ export class PublicRepository {
       .from(serviceProviderSkills)
       .where(eq(serviceProviderSkills.providerId, id));
 
+    const { profileId, memberId, status, verificationStatus, ...publicFields } = provider;
+
     return {
-      ...provider,
+      ...publicFields,
+      isVerified: verificationStatus === "verified",
       portfolio,
       serviceAreas: areas,
       skills,

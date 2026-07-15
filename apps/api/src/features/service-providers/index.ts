@@ -6,6 +6,8 @@ import { skillsRouter } from "./provider-skills/routes.js";
 import { areasRouter } from "./service-areas/routes.js";
 import { publicProvidersRouter } from "./public/routes.js";
 import { searchProvidersRouter } from "./search/routes.js";
+import { verificationRouter } from "./verification/routes.js";
+import { analyticsRouter } from "./analytics/routes.js";
 
 export const serviceProvidersRouter = new Hono();
 
@@ -14,5 +16,7 @@ serviceProvidersRouter.route("/providers", providersRouter);
 serviceProvidersRouter.route("/portfolio", portfolioRouter);
 serviceProvidersRouter.route("/provider-skills", skillsRouter);
 serviceProvidersRouter.route("/service-areas", areasRouter);
+serviceProvidersRouter.route("/provider-verification", verificationRouter);
+serviceProvidersRouter.route("/provider-analytics", analyticsRouter);
 serviceProvidersRouter.route("/service-providers/search", searchProvidersRouter);
 serviceProvidersRouter.route("/service-providers", publicProvidersRouter);
