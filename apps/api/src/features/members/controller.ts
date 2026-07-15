@@ -18,7 +18,7 @@ export class MemberController {
   async updateMe(c: Context) {
     try {
       const profile = c.get("profile");
-      const body = await c.req.json();
+      const body = c.req.valid("json" as never) as any;
       const result = await memberService.updateOwnProfile(profile.id, body);
       return successResponse(c, "Profile updated successfully", result);
     } catch (err: any) {
