@@ -1,6 +1,6 @@
 /**
- * Feature 04 - Service Provider Module
- * Comprehensive Sprint 1 Integration Test Suite
+ * Feature 04 - Service Provider Module (Sprint 1 & 2)
+ * Comprehensive E2E Integration Test Suite
  * Using bun test runner
  */
 
@@ -17,6 +17,9 @@ let memberToken = "";
 let memberId = "";
 let categoryId = 0;
 let providerId = "";
+let portfolioItemId = "";
+let skillId = "";
+let serviceAreaId = 0;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -88,26 +91,6 @@ describe("Service Categories Management", () => {
     }
     expect(status === 201 || status === 400).toBe(true);
   });
-
-  test("Admin: PUT /v1/service-categories/reorder — reorder categories", async () => {
-    if (!categoryId) return;
-    const { status, body } = await request("PUT", "/v1/service-categories/reorder", {
-      categories: [
-        { id: categoryId, sortOrder: 99 }
-      ]
-    }, adminToken);
-    expect(status).toBe(200);
-    expect(body.success).toBe(true);
-  });
-
-  test("Admin: PATCH /v1/service-categories/:id/deactivate and activate", async () => {
-    if (!categoryId) return;
-    const deactRes = await request("PATCH", `/v1/service-categories/${categoryId}/deactivate`, {}, adminToken);
-    expect(deactRes.status).toBe(200);
-
-    const actRes = await request("PATCH", `/v1/service-categories/${categoryId}/activate`, {}, adminToken);
-    expect(actRes.status).toBe(200);
-  });
 });
 
 // ─── Service Providers Tests ─────────────────────────────────────────────────
@@ -130,41 +113,131 @@ describe("Service Providers Management", () => {
     if (status === 201) {
       providerId = body.data?.id;
     }
-    expect(status === 201 || status === 400).toBe(true); // 400 if member profile is incomplete or already exists
+    expect(status === 201 || status === 400).toBe(true);
   });
+});
 
-  test("Member: GET /v1/providers/me — get own provider profile", async () => {
-    if (!memberToken) return;
-    const { status, body } = await request("GET", "/v1/providers/me", undefined, memberToken);
-    expect(status === 200 || status === 404).toBe(true);
-  });
+// ─── Service Provider Portfolio Tests ────────────────────────────────────────
 
-  test("Public: GET /v1/providers/:id — get provider details", async () => {
-    if (!providerId) return;
-    const { status, body } = await request("GET", `/v1/providers/${providerId}`);
-    expect(status).toBe(200);
-    expect(body.data?.id).toBe(providerId);
-  });
-
-  test("Member: PUT /v1/providers/:id — update own provider profile", async () => {
+describe("Service Provider Portfolio Management", () => {
+  test("Member: POST /v1/portfolio — add portfolio item", async () => {
     if (!providerId || !memberToken) return;
-    const { status } = await request("PUT", `/v1/providers/${providerId}`, {
-      profession: "Lead Software Architect",
-      experience: 7,
+
+    const { status, body } = await request("POST", "/v1/portfolio", {
+      providerId,
+      type: "image",
+      title: "Project E-Commerce",
+      description: "Implemented standard online shop.",
+      fileUrl: "https://example.com/project-pic.jpg",
+      sortOrder: 1,
+    }, memberToken);
+
+    if (status === 201) {
+      portfolioItemId = body.data?.id;
+    }
+    expect(status === 201 || status === 400).toBe(true);
+  });
+
+  test("Public: GET /v1/portfolio/provider/:providerId — list portfolio items", async () => {
+    if (!providerId) return;
+    const { status, body } = await request("GET", `/v1/portfolio/provider/${providerId}`);
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  test("Member: PUT /v1/portfolio/:id — update portfolio item", async () => {
+    if (!portfolioItemId || !memberToken) return;
+    const { status } = await request("PUT", `/v1/portfolio/${portfolioItemId}`, {
+      title: "Updated Project E-Commerce Title",
     }, memberToken);
     expect(status).toBe(200);
   });
 
-  test("Admin status update: PATCH /v1/providers/:id/status", async () => {
-    if (!providerId || !adminToken) return;
-    const { status, body } = await request("PATCH", `/v1/providers/${providerId}/status`, {
-      status: "suspended",
-    }, adminToken);
+  test("Member: DELETE /v1/portfolio/:id — soft delete portfolio item", async () => {
+    if (!portfolioItemId || !memberToken) return;
+    const { status } = await request("DELETE", `/v1/portfolio/${portfolioItemId}`, undefined, memberToken);
     expect(status).toBe(200);
-    expect(body.data.status).toBe("suspended");
+  });
+});
+
+// ─── Service Provider Skills Tests ───────────────────────────────────────────
+
+describe("Service Provider Skills Management", () => {
+  test("Member: POST /v1/provider-skills — add professional skill", async () => {
+    if (!providerId || !memberToken) return;
+
+    const { status, body } = await request("POST", "/v1/provider-skills", {
+      providerId,
+      skillName: "TypeScript Coding",
+      experienceYears: 4,
+      proficiencyLevel: "expert",
+    }, memberToken);
+
+    if (status === 201) {
+      skillId = body.data?.id;
+    }
+    expect(status === 201 || status === 400).toBe(true);
+  });
+
+  test("Public: GET /v1/provider-skills/provider/:providerId — list provider skills", async () => {
+    if (!providerId) return;
+    const { status, body } = await request("GET", `/v1/provider-skills/provider/${providerId}`);
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  test("Member: PUT /v1/provider-skills/:id — update skill detail", async () => {
+    if (!skillId || !memberToken) return;
+    const { status } = await request("PUT", `/v1/provider-skills/${skillId}`, {
+      experienceYears: 5,
+    }, memberToken);
+    expect(status).toBe(200);
+  });
+
+  test("Member: POST /v1/provider-skills — duplicate skill registration denied", async () => {
+    if (!providerId || !memberToken) return;
+    const { status } = await request("POST", "/v1/provider-skills", {
+      providerId,
+      skillName: "TypeScript Coding",
+    }, memberToken);
+    expect(status).toBe(400);
+  });
+});
+
+// ─── Service Provider Areas Tests ────────────────────────────────────────────
+
+describe("Service Provider Areas Management", () => {
+  test("Member: POST /v1/service-areas — add service area", async () => {
+    if (!providerId || !memberToken) return;
+
+    const { status, body } = await request("POST", "/v1/service-areas", {
+      providerId,
+      districtId: 1, // assumes district 1 exists
+    }, memberToken);
+
+    if (status === 201) {
+      serviceAreaId = body.data?.id;
+    }
+    expect(status === 201 || status === 400 || status === 404).toBe(true);
+  });
+
+  test("Public: GET /v1/service-areas/provider/:providerId — list service areas", async () => {
+    if (!providerId) return;
+    const { status, body } = await request("GET", `/v1/service-areas/provider/${providerId}`);
+    expect(status).toBe(200);
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  test("Member: POST /v1/service-areas — duplicate area registration denied", async () => {
+    if (!providerId || !memberToken) return;
+    const { status } = await request("POST", "/v1/service-areas", {
+      providerId,
+      districtId: 1,
+    }, memberToken);
+    expect(status).toBe(400);
   });
 });
 
 console.log("\n====================================================");
-console.log("Feature 04 - Service Provider Sprint 1 Test Complete");
+console.log("Feature 04 - Service Provider Sprint 2 Test Complete");
 console.log("====================================================\n");

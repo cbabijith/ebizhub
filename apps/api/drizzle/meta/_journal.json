@@ -15,6 +15,13 @@
       "when": 1784108890739,
       "tag": "0001_lowly_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784109214471,
+      "tag": "0002_nasty_zarda",
+      "breakpoints": true
     }
   ]
 }
