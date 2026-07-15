@@ -14,3 +14,4 @@ export * from "./schema/interaction-log";
 export * from "./schema/analytics";
 export * from "./schema/verification";
 export * from "./schema/settings";
+export * from "./schema/member-skills";

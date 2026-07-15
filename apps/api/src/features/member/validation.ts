@@ -10,3 +10,7 @@ export const updateProfileSchema = z.object({
   districtId: z.number().int().positive().optional().nullable(),
   panchayatId: z.number().int().positive().optional().nullable(),
 });
+
+export const addSkillSchema = z.object({
+  skill: z.string().min(1, "Skill name is required").max(50, "Skill name must be under 50 characters"),
+});

@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { MemberController } from "./controller.js";
 import { authMiddleware } from "../../shared/middleware/auth.js";
 import { errorResponse } from "../../shared/responses/response.js";
-import { updateProfileSchema } from "./validation.js";
+import { updateProfileSchema, addSkillSchema } from "./validation.js";
 
 export const memberRouter = new Hono();
 const controller = new MemberController();
@@ -17,9 +17,12 @@ const validateJson = (schema: any) =>
     }
   });
 
-// All endpoints in this router require standard JWT authentication
+// All endpoints in this router require JWT authentication
 memberRouter.use(authMiddleware);
 
 memberRouter.get("/me", (c) => controller.getMe(c));
 memberRouter.put("/me", validateJson(updateProfileSchema), (c) => controller.updateMe(c));
+memberRouter.post("/skills", validateJson(addSkillSchema), (c) => controller.addSkill(c));
+memberRouter.delete("/skills/:id", (c) => controller.removeSkill(c));
+memberRouter.post("/avatar", (c) => controller.uploadAvatar(c));
 memberRouter.get("/:id", (c) => controller.getMemberById(c));
