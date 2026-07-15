@@ -432,3 +432,12 @@ Client Request ──> Common Middleware ──> Routes ──> Controller ─�
   cd apps/user-app
   flutter run
   ```
+
+---
+
+## Project Documentation
+
+Detailed system documentation resources:
+- 📊 **[Database Schema Design & ERD](file:///home/abijithcb/.gemini/antigravity-ide/brain/7988d6c2-7460-437a-9ebc-50ec02eaa7bf/db_schema_documentation.md)**: Tables, constraints, columns, and relations mappings.
+- 🔀 **[System Data Flow Diagrams](file:///home/abijithcb/.gemini/antigravity-ide/brain/7988d6c2-7460-437a-9ebc-50ec02eaa7bf/data_flow_diagrams.md)**: Visual sequence diagrams mapping out vendor onboarding, search/discovery, click-tracking, and admin vetting workflows.
+
