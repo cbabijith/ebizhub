@@ -1,12 +1,24 @@
 import { BusinessRepository } from "./repository.js";
 import { CategoryRepository } from "../categories/repository.js";
+import { db } from "../../../config/database.js";
+import { members } from "../../../database/schema.js";
+import { eq } from "drizzle-orm";
 
 const businessRepo = new BusinessRepository();
 const categoryRepo = new CategoryRepository();
 
 export class BusinessService {
   async registerBusiness(ownerId: string, data: any) {
-    // Category existence validation
+    // 1. Verify owner has a completed member profile
+    const [member] = await db
+      .select()
+      .from(members)
+      .where(eq(members.profileId, ownerId));
+    if (!member) {
+      throw new Error("Owner must have a completed member profile to register a business");
+    }
+
+    // 2. Category existence validation
     const category = await categoryRepo.findById(data.categoryId);
     if (!category || category.status !== "active") {
       throw new Error("Invalid category ID");

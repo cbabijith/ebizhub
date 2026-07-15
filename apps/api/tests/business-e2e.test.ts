@@ -197,6 +197,33 @@ describe("Module 3.3 — Business Gallery (Max 10 images)", () => {
   });
 });
 
+describe("Stage 3 — Database & Cross-Module Integration", () => {
+  test("Cannot register a business if owner lacks a member profile", async () => {
+    const randEmail = `new-user-${Date.now()}@test.com`;
+    const regRes = await request("POST", "/v1/auth/register", {
+      fullName: "Non Member User",
+      email: randEmail,
+      password: "User@1234",
+      phone: "+910000001234",
+    });
+    
+    const token = regRes.body?.data?.session?.access_token;
+    if (!token) return;
+
+    const bizRes = await request("POST", "/v1/businesses", {
+      categoryId: categoryId || 1,
+      businessName: "Ghost Business",
+      slug: `ghost-biz-${Date.now()}`,
+      phone: "+910000000001",
+      address: "Ghost Alley",
+      districtId: 1,
+    }, token);
+
+    expect(bizRes.status).toBe(400);
+    expect(bizRes.body.message).toContain("Owner must have a completed member profile");
+  });
+});
+
 console.log("\n====================================================");
 console.log("Feature 03 - Business Management E2E Audit Fix Tests");
 console.log("====================================================\n");
