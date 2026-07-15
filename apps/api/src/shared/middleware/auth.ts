@@ -1,9 +1,9 @@
 import { Context, Next } from "hono";
 import { supabase } from "../../config/auth.js";
-import { db } from "../../config/database.js";
-import { profiles } from "../../database/schema.js";
-import { eq } from "drizzle-orm";
 import { errorResponse } from "../responses/response.js";
+import { AuthRepository } from "../../features/auth/repository.js";
+
+const authRepo = new AuthRepository();
 
 export interface AuthenticatedContext {
   user: any;
@@ -27,8 +27,8 @@ export async function authMiddleware(c: Context, next: Next) {
       return errorResponse(c, "Unauthorized: Token verification failed", [error?.message || "User not found"], 401);
     }
 
-    // 2. Fetch profile from local database
-    const [profile] = await db.select().from(profiles).where(eq(profiles.id, user.id));
+    // 2. Fetch profile from repository
+    const profile = await authRepo.findProfileById(user.id);
 
     if (!profile) {
       return errorResponse(c, "Unauthorized: Profile record not found", [], 401);
