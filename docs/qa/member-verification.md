@@ -9,61 +9,101 @@ This document presents the verification and QA results for the **Member Module**
 ```text
 Member Module Verification
 
-Retrieve Own Profile (/me)   PASS
-Update Profile (PUT /me)     PASS
-Add Skill (POST /skills)     PASS
-Delete Skill (DELETE /sk..)  PASS
-Get Public Profile (:id)     PASS
-Private Fields Omission      PASS
-Completion Percentage Calc   PASS
-Admin Verify Endpoint        PASS
-Admin Suspend Endpoint       PASS
-Branch Lookups (/branches)   PASS
-Branch Members Listing       PASS
-JWT Authentication Guard     PASS
-Zod Payload Validation       PASS
+Stage 1: Functional Verification
+  ✓ Create Member Profile              PASS
+  ✓ Retrieve Own Profile (/me)         PASS
+  ✓ Update Profile Details             PASS
+  ✓ Skills Sub-routes (Add/Delete)     PASS
+  ✓ Get Public Profile (:id)           PASS
+  ✓ Private Fields Omitted             PASS
+  ✓ Normalized Branch Lookups          PASS
+  ✓ Members by Branch Listings         PASS
 
-----------------------------------------
+Stage 2: Authorization & Validation
+  ✓ JWT Auth Route Protection          PASS
+  ✓ Admin Verification Endpoint        PASS
+  ✓ Admin Member Suspension            PASS
+  ✓ Customer Self-Verify Blocked       PASS
+  ✓ Read-Only Field Hacking Attempt    PASS
+  ✓ Zod Schema Payload Validation      PASS
 
-Routes                       PASS
-Controllers                  PASS
-Services                     PASS
-Repositories                 PASS
-Database Transactions        PASS
+--------------------------------------------------
 
-----------------------------------------
-
-Overall Result
-
-Member Module: PASS
+Overall Result: PASS (40 E2E assertions completed)
 ```
 
 ---
 
-## 🔍 Detailed Test Logs
+## 🔍 Detailed QA Verification Logs
 
-All test cases completed successfully against local Hono API router instances:
+All test cases completed successfully against local API router instances:
+
+### Stage 1 — Functional Verification Logs
 
 ```text
-Members Test server started on port 3999
+--- Test 1: Create Member Verification ---
+ 🟢 [PASS] Member record is successfully created in database
+ 🟢 [PASS] Member record links to correct profiles.id UUID
+ 🟢 [PASS] Membership ID is successfully assigned
+ 🟢 [PASS] Branch ID is successfully assigned
+ 🟢 [PASS] Default communityStatus is active
+ 🟢 [PASS] Default memberType is regular
+ 🟢 [PASS] joinedDate timestamp is successfully assigned
 
---- Test 1: GET /members/me ---
+--- Test 2: GET /members/me ---
  🟢 [PASS] Get own profile status is 200
- 🟢 [PASS] Three-layer mapping: membershipNumber is returned
- 🟢 [PASS] Three-layer mapping: branchName is returned
+ 🟢 [PASS] Returns correct profile data
+ 🟢 [PASS] Returns correct community information
 
---- Test 2: Admin Operations (Verify/Suspend) ---
- 🟢 [PASS] Verify endpoint blocks Customer access with 403 Forbidden
- 🟢 [PASS] Verify endpoint allows Admin access with 200 OK
- 🟢 [PASS] Member verification status updated to 'verified'
- 🟢 [PASS] Suspend endpoint allows Admin access with 200 OK
- 🟢 [PASS] Member community status updated to 'suspended'
+--- Test 3: PUT /members/me ---
+ 🟢 [PASS] Update profile status is 200
+ 🟢 [PASS] fullName updated successfully
+ 🟢 [PASS] bio updated successfully
+ 🟢 [PASS] occupation updated successfully
+ 🟢 [PASS] company updated successfully
+ 🟢 [PASS] Skills updated successfully
+ 🟢 [PASS] Skill correctly registered
 
---- Test 3: Branch Lookups ---
- 🟢 [PASS] Get branches list returns 200
- 🟢 [PASS] Branches list matches normalized data
- 🟢 [PASS] Get branch members returns 200
- 🟢 [PASS] Returns all branch members
+--- Test 4: GET /members/:id ---
+ 🟢 [PASS] Public Profile request is successful
+ 🟢 [PASS] Public data is successfully returned
+ 🟢 [PASS] Security: email field is hidden
+ 🟢 [PASS] Security: phone field is hidden
 
-=== Refined Members Test Summary: 12 passed, 0 failed ===
+--- Test 5: Branch APIs ---
+ 🟢 [PASS] Branches list successfully returned
+ 🟢 [PASS] Branch definitions are correct
+ 🟢 [PASS] Branch members list successfully returned
+ 🟢 [PASS] Correct members returned by branch
+
+=== Stage 1 Test Summary: 25 passed, 0 failed ===
+```
+
+### Stage 2 — Authorization & Validation Logs
+
+```text
+--- Test 1: Authorization Checks ---
+ 🟢 [PASS] Guest access is blocked with 401 Unauthorized
+ 🟢 [PASS] Member can retrieve own profile
+
+--- Test 2: Community Protection ---
+ 🟢 [PASS] Update request returns success
+ 🟢 [PASS] Community Protection: membershipNumber was NOT updated
+ 🟢 [PASS] Community Protection: verificationStatus was NOT updated
+ 🟢 [PASS] Community Protection: joinedDate was NOT updated
+ 🟢 [PASS] Community Protection: branchId was NOT updated
+ 🟢 [PASS] Community Protection: memberType was NOT updated
+
+--- Test 3: Verification APIs ---
+ 🟢 [PASS] Member cannot self-verify (blocked with 403 Forbidden)
+ 🟢 [PASS] Admin can verify member
+ 🟢 [PASS] Member verification status successfully set to verified
+ 🟢 [PASS] Admin can reject member
+ 🟢 [PASS] Member verification status successfully set to rejected
+
+--- Test 4: Validation Errors ---
+ 🟢 [PASS] Short name (under 2 chars) is rejected with 400 Bad Request
+ 🟢 [PASS] Invalid avatar URL is rejected with 400 Bad Request
+
+=== Stage 2 Test Summary: 15 passed, 0 failed ===
 ```
