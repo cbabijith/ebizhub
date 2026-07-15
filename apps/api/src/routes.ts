@@ -12,6 +12,8 @@ import {
   analyticsRouter,
 } from "./features/business/index.js";
 
+import { serviceProvidersRouter } from "./features/service-providers/index.js";
+
 export const apiRouter = new Hono();
 
 // Version 1 Base Endpoint
@@ -36,3 +38,6 @@ apiRouter.route("/v1/business-services", serviceRouter);
 apiRouter.route("/v1/business-verification", verificationRouter);
 apiRouter.route("/v1/business-search", searchRouter);
 apiRouter.route("/v1/business-analytics", analyticsRouter);
+
+// Feature 04 - Service Provider Module
+apiRouter.route("/v1", serviceProvidersRouter);
