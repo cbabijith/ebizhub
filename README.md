@@ -309,59 +309,77 @@ By the end of Phase 1, a community member should be able to:
 
 ---
 
-## Backend Architecture Design (Domain-Driven Modular)
+## Backend Architecture Design (Feature-Driven Development - FDD)
 
-For scalability and clean division of concerns across multiple platforms (Admin, User Web, Flutter Apps), `apps/api/` uses a **Domain-Driven Modular Architecture**.
+For EBizHub, the backend uses a **Feature-Driven Development (FDD)** architecture. This structure ensures that code is organized around business features rather than technical layers alone, keeping capabilities self-contained and making scalability seamless.
 
 ### Folder Directory Layout
 ```text
 apps/api/
 ├── src/
-│   ├── app.ts                  # Hono app setup (middlewares, routes registration)
+│   ├── app.ts                  # Hono app setup (middlewares, feature registration)
 │   ├── server.ts               # Server entry point (starts Node adapter)
-│   ├── routes.ts               # Versioned root routes directory
+│   ├── routes.ts               # Versioned root routes router
 │   │
 │   ├── config/                 # Global configuration settings
-│   │   ├── env.ts              # Schema-validated env loader
+│   │   ├── env.ts              # Environment loader
 │   │   ├── database.ts         # Drizzle connection client
-│   │   ├── auth.ts             # JWT/Supabase auth handlers
-│   │   └── storage.ts          # File upload configurations
+│   │   ├── auth.ts             # Auth handlers (Supabase JWT checking)
+│   │   └── storage.ts          # File upload config
 │   │
-│   ├── db/                     # Drizzle Database root
-│   │   ├── schema/             # Partitioned schema definitions
+│   ├── database/               # Drizzle Database folder
+│   │   ├── schema/             # Drizzle schemas divided by domain
+│   │   ├── schema.ts           # Central schema exports entry point
 │   │   ├── migrations/         # Drizzle output migration files
-│   │   └── seed/               # Default lookup data seeds
+│   │   └── seed/               # Default database seeds
 │   │
-│   ├── common/                 # Shared project modules
-│   │   ├── errors/             # Custom Error handlers
-│   │   ├── middleware/         # Hono core middlewares (logger, auth)
-│   │   ├── validators/         # Common validator definitions
-│   │   └── responses/          # Standard success/error response formats
+│   ├── shared/                 # Common modules (shared by all features)
+│   │   ├── middleware/         # Custom middlewares (auth, admin, role checking)
+│   │   ├── utils/              # Utility helper functions
+│   │   ├── errors/             # Custom error classes
+│   │   ├── responses/          # Standard response JSON models
+│   │   ├── constants/          # Shared constants
+│   │   └── pagination/         # Common pagination helpers
 │   │
-│   └── modules/                # Business Domain Modules (Self-contained)
-│       ├── auth/
-│       ├── members/
-│       ├── businesses/
-│       ├── service-providers/
-│       ├── categories/
-│       ├── analytics/
-│       ├── verification/
-│       └── settings/
+│   └── features/               # Feature Modules (Self-contained)
+│       ├── auth/               # Mobile OTP, roles, registration
+│       ├── members/            # Personal and professional profile management
+│       ├── businesses/         # Shop profiles, catalogues (max 5 services/products)
+│       ├── service-providers/  # Professional profiles, experience, service areas
+│       ├── categories/         # Directory categories taxonomy lookup
+│       ├── search/             # Global directory search query operations
+│       ├── analytics/          # Views, phone/WhatsApp/Map clicks interaction tracking
+│       ├── verification/       # Approval queues and admin review backlog
+│       ├── dashboard/          # Vendor analytics dashboard aggregates
+│       └── uploads/            # S3/Supabase storage upload controllers
 ```
 
-### Self-Contained Domain Modules
-Each sub-folder inside `apps/api/src/modules/` is self-contained and holds its own business layers:
-*   `*.routes.ts`: Defines Hono endpoints (no business logic).
-*   `*.controller.ts`: Validates request input parameters, calls domain services, and returns standardized response models.
-*   `*.service.ts`: Implements business operations logic (e.g. `registerBusiness()`, `vetVendor()`).
-*   `*.repository.ts`: Handles direct Drizzle query selections and mutations (no business logic).
-*   `*.validation.ts`: Zod validation schemas for input auditing.
-*   `*.dto.ts` / `*.mapper.ts`: Maps raw database schema records to clean API response objects.
+### Self-Contained Feature Folder Contract
+Every feature folder inside `apps/api/src/features/` follows a standardized structure contract:
+*   `routes.ts`: Defines endpoint URLs only (no business logic).
+*   `controller.ts`: Handles requests, parses inputs, triggers services, and builds standard responses.
+*   `service.ts`: Houses core business logic (e.g. `registerBusiness()`, `verifyBusiness()`).
+*   `repository.ts`: Isolates raw database queries using Drizzle (no business logic).
+*   `validation.ts`: Holds Zod validation schemas.
+*   `dto.ts` & `mapper.ts`: Handles data transfer models and database record mapper conversions.
+*   `permissions.ts`: Domain-specific role checks.
+*   `*.openapi.ts`: OpenAPI specifications for auto-generated docs.
 
-### Request Execution Flow
+### Feature-Driven Request Flow
 ```
-Client Request ──> Common Middleware ──> Routes ──> Controller ──> Service ──> Repository ──> PostgreSQL
+Client Request ──> Shared Middleware ──> Routes ──> Controller ──> Service ──> Repository ──> Drizzle ORM ──> PostgreSQL
 ```
+
+### Suggested Development Order (Phase 1)
+1. **Authentication** (Feature 1)
+2. **Members** (Feature 2)
+3. **Categories** (Feature 3)
+4. **Businesses** (Feature 4)
+5. **Service Providers** (Feature 5)
+6. **Search** (Feature 6)
+7. **Verification** (Feature 7)
+8. **Analytics** (Feature 8)
+9. **Dashboard** (Feature 9)
 
 ### Standardized Response Formats
 
@@ -369,7 +387,7 @@ Client Request ──> Common Middleware ──> Routes ──> Controller ─�
     ```json
     {
       "success": true,
-      "message": "Resource created successfully",
+      "message": "Resource retrieved successfully",
       "data": {},
       "meta": {}
     }
@@ -378,8 +396,8 @@ Client Request ──> Common Middleware ──> Routes ──> Controller ─�
     ```json
     {
       "success": false,
-      "message": "Resource not found",
-      "errors": ["Unable to resolve ID"]
+      "message": "Validation failed",
+      "errors": ["District ID is required"]
     }
     ```
 

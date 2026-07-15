@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { apiRouter } from "./routes.js";
-import { errorResponse } from "./common/responses/response.js";
+import { errorResponse } from "./shared/responses/response.js";
 
 export const app = new Hono();
 
