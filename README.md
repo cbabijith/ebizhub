@@ -50,118 +50,125 @@ ebizhub/
 - **Language**: Dart
 - **State Management**: Provider / Riverpod
 
----
+# EBizHub – Core Modules (Phase 1)
 
-# EBizHub – Phase 1 Modules Spec
+For a scalable architecture, we organize the system in terms of **9 Core Business Modules**. Submodules and features map directly to these core modules.
 
-### 🔐 1. Authentication & User Management
-*   **Authentication Flows**: Mobile OTP Login, Email Login, Registration, Forgot Password.
-*   **Role Management**:
-    *   **Admin**: System administrators.
-    *   **Vendor**: Business owners and service providers.
-    *   **Customer**: General community consumers.
-*   **Profile Integration**: User Profile Completion and Account Verification states.
+## Core Modules & Submodules
 
-### 👤 2. Member Profile Module
-Every community member gets a profile containing:
-*   **Personal Details**: Name, Photo, Mobile, Email, District, Panchayat / Municipality, Address.
-*   **Professional Details**: Occupation, Company, Skills, About/Bio.
-*   **Community Details**: Membership ID (Optional), Verification Status.
+### 1. Authentication & Identity
+**Purpose:** Manage users, authorization, and platform access.
+*   **Submodules**: Login, Registration, OTP, Roles (Admin, Vendor, Customer), Permissions, Account Verification.
 
-### 🏢 3. Business Registration Module
-*   **Business Info**: Business Name, Category, Description, Logo, Cover Image.
-*   **Contact Details**: Phone, WhatsApp, Email, Website.
-*   **Location Coordinates**: Physical Address, Google Maps Location Link.
-*   **Metadata**: Working Hours, Established Year, GST Number (Optional).
-*   **Vetting States**: Pending, Approved, Rejected.
+### 2. Member Management
+**Purpose:** Manage community members.
+*   **Submodules**: Member Profile, Professional Details, Community Details, Membership Status, Profile Management.
 
-### 🛠️ 4. Service Provider Module
-For individual professionals (e.g., Electricians, Plumbers, Lawyers, Doctors, Developers, Marketers, Photographers):
-*   **Professional Meta**: Profession, Years of Experience, Skills, Portfolio Gallery, Service Area coverage, Direct Contact channels.
+### 3. Business Management
+**Purpose:** Manage businesses registered on the platform.
+*   **Submodules**: Business Registration, Business Profile, Business Gallery, Contact Information, Business Hours, Business Verification, Business Showcase (Products & Services - capped at a **max of 5 items**).
 
-### 🖼️ 5. Business Showcase Module
-*   **Strict Limitations**: Every business profile is capped at a **maximum of 5 Services** and a **maximum of 5 Products**.
-*   **Item Content**: Image/Photo, Name, Detailed Description.
+### 4. Service Provider Management
+**Purpose:** Manage professionals who provide services (e.g. Electricians, Plumbers, Lawyers, Doctors, Developers).
+*   **Submodules**: Professional Profile, Skills, Experience, Portfolio, Service Areas.
 
-### 📋 6. Directory Module
-*   **Browse Businesses by**: Category, District, Location.
-*   **Browse Professionals by**: Profession, Location.
+### 5. Directory & Discovery
+**Purpose:** Help users discover businesses and professionals.
+*   **Submodules**: Business Directory, Service Directory, Category Browsing, Location Filtering, Global Search, Business Detail Page.
 
-### 🔍 7. Global Search Module
-*   **Unified Search Index**: Search everything (Businesses, Service Providers, Categories) with autocomplete/instant results.
+### 6. Customer Interaction
+**Purpose:** Connect customers directly with businesses.
+*   **Submodules**: Click to Call, WhatsApp, Google Maps, Share Profile, Favourite (optional).
 
-### 📄 8. Business Detail Page
-*   **Showcase layout**: Displays Logo, Gallery, Description, Contacts, Working Hours, Maps Link, and the list of up to 5 Products & Services.
-*   **Instant Customer CTAs**: Call, WhatsApp Message, Google Maps Navigation.
+### 7. Analytics
+**Purpose:** Measure engagement and profile activity.
+*   **Submodules**: Profile Views, Phone Clicks, WhatsApp Clicks, Map Clicks, Dashboard Reports.
 
-### 📊 9. Interaction Tracking Module
-Automatically logs metrics in the database:
-*   Business/Profile Views
-*   Phone click counts
-*   WhatsApp redirect clicks
-*   Google Maps navigation clicks
+### 8. Administration
+**Purpose:** Manage the platform.
+*   **Submodules**: User Management, Business Management, Verification Queue, Category Management, Reports, Dashboard.
 
-### 📈 10. Vendor Dashboard
-*   **Insights**: Profile Status, Verification Badge Status, Page Views, Phone click analytics, WhatsApp click analytics, Map click analytics.
-*   **Management Controls**: Manage Business Profile details, Products, and Services.
-
-### 👑 11. Admin Dashboard
-Allows administrators to manage:
-*   Users & Roles
-*   Business registrations & Vetting queue
-*   Service Providers listings
-*   Directory categories
-*   Vetting Approvals/Rejections
-*   System-wide analytics and reports
-
-### 🛡️ 12. Verification Module
-*   Approve or Reject Businesses and Professionals.
-*   Enforces/displays the **Verified** vs. **Unverified** badge status.
-
-### 🏷️ 13. Category Management
-*   **Business Categories**: Grocery, Hotel, Medical, Printing, Electronics, etc.
-*   **Service Categories**: Electrician, Plumber, Advocate, Accountant, Developer, etc.
-
-### ⚙️ 14. Settings Module
-*   Business Settings
-*   Notification Settings
-*   Privacy and Password reset controls.
+### 9. Master Data Management
+**Purpose:** Manage reusable lookup and system configuration data.
+*   **Submodules**: Business Categories, Service Categories, Districts, Panchayats, Cities, Settings.
 
 ---
 
-# Phase 1 Database Entities
+# Core Architecture
 
-*   **Users** (Auth profiles)
-*   **Member Profiles** (Community profile details)
-*   **Businesses** (Shops and commercial entities)
-*   **Business Categories** (Taxonomy)
-*   **Service Providers** (Freelancers and professionals)
-*   **Service Categories** (Taxonomy)
-*   **Products** (Catalog items - max 5 per business)
-*   **Services** (Catalog items - max 5 per business)
-*   **Business Gallery** (Media assets)
-*   **Business Locations** (Addresses and map links)
-*   **Analytics** (Interaction tracking logs)
-*   **Verification Requests** (Approval requests backlog)
+```
+Authentication & Identity
+│
+├── Member Management
+├── Business Management
+├── Service Provider Management
+├── Directory & Discovery
+├── Customer Interaction
+├── Analytics
+├── Administration
+└── Master Data Management
+```
+
+## Database Entities
+
+- **Users** (Auth profiles, Roles, Permissions)
+- **Members** (Community member profiles)
+- **Businesses** (Registries, Profiles, Gallery, Locations)
+- **Products & Services** (Business Showcase items - max 5 per business)
+- **Service Providers** (Freelancers and individual professionals)
+- **Categories** (Business & Service lookup lists)
+- **Interaction Logs** (Views, clicks for Call, WhatsApp, and Maps)
+- **Verification Requests** (Backend approval pipeline logs)
+- **Settings** (Global system configuration)
 
 ---
 
-# Phase 1 Application Modules
+# Application Architectures
 
-### 📱 User App (Flutter)
-*   Browse verified directory, run searches, view profiles, and access Call / WhatsApp / Maps CTAs.
+### User App (Flutter)
+- Authentication
+- Directory & Discovery
+- Business Pages
+- Service Provider Pages
+- Profile Management
 
-### 📱 Vendor App (Flutter)
-*   Register businesses, manage profiles, maintain up to 5 services/products, and view dashboard analytics.
+### Vendor App (Flutter)
+- Authentication
+- Business Management
+- Service Showcase Management
+- Analytics Reports
 
-### 💻 User Web (Next.js)
-*   Public-facing directory site, unified search, and business profile/showcase pages.
+### User Web (Next.js)
+- Directory & Discovery
+- Unified Search Index
+- Business & Service Pages
 
-### 💻 Admin Web (Next.js)
-*   Verification dashboard, category taxonomy control, analytics logs, and user role management.
+### Admin Web (Next.js)
+- Vetting & Verification Queue
+- Category & Master Data Management
+- System-wide Analytics & Reports
+- User Role Management
 
-### 🔌 API Backend (Hono)
-*   REST APIs, Authentication wrappers, business operations, unified search query handlers, analytics aggregation, and admin verification endpoints.
+### API Backend (Hono)
+- Auth & Role Middleware
+- Members & Business Operations
+- Directory Search Query Handlers
+- Analytics Event Trackers
+- Admin Approvals & Verification Actions
+- Master Data Lookup Endpoints
+
+---
+
+## Phase 1 Deliverable
+
+By the end of Phase 1, a community member should be able to:
+1. Register an account.
+2. Register a business or service.
+3. Get verified by an administrator.
+4. Be listed in the public directory.
+5. Be discovered through search and categories.
+6. Receive calls, WhatsApp messages, and map visits from customers.
+7. Track profile views and customer interactions from their dashboard.
 
 ---
 
