@@ -14,10 +14,13 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.11.0",
+    "@hono/zod-validator": "^0.8.0",
+    "@supabase/supabase-js": "^2.39.7",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",
     "hono": "^4.3.7",
-    "postgres": "^3.4.4"
+    "postgres": "^3.4.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",

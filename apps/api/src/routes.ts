@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { authRouter } from "./features/auth/index.js";
 
 export const apiRouter = new Hono();
 
@@ -10,6 +11,8 @@ apiRouter.get("/v1", (c) => {
   });
 });
 
-// Future modules will register here:
-// apiRouter.route("/v1/auth", authRouter);
+// Register auth feature router
+apiRouter.route("/v1/auth", authRouter);
+
+// Future features will register here:
 // apiRouter.route("/v1/businesses", businessRouter);
