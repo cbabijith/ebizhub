@@ -1,4 +1,5 @@
 import { pgTable, uuid, text, timestamp, integer, doublePrecision } from "drizzle-orm/pg-core";
+
 import { profiles } from "./profile";
 import { businessCategories } from "./business-category";
 import { districts } from "./district";
@@ -22,11 +23,14 @@ export const businesses = pgTable("businesses", {
   panchayatId: integer("panchayat_id").references(() => panchayats.id),
   latitude: doublePrecision("latitude"),
   longitude: doublePrecision("longitude"),
+  googleMapsUrl: text("google_maps_url"),
   workingHours: text("working_hours"),
   gstNumber: text("gst_number"),
+  registrationNumber: text("registration_number"),
   establishedYear: integer("established_year"),
   verificationStatus: text("verification_status", { enum: ["pending", "verified", "rejected"] }).default("pending").notNull(),
-  status: text("status", { enum: ["active", "inactive"] }).default("active").notNull(),
+  status: text("status", { enum: ["active", "inactive", "suspended"] }).default("active").notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
