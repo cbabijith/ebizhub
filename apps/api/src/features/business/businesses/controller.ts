@@ -24,7 +24,8 @@ export class BusinessController {
       const result = await businessService.updateBusiness(id, profile.id, profile.role, body);
       return successResponse(c, "Business updated successfully", result);
     } catch (err: any) {
-      return errorResponse(c, err.message || "Failed to update business", [err.message], 400);
+      const status = err.message === "Business not found" ? 404 : 400;
+      return errorResponse(c, err.message || "Failed to update business", [err.message], status);
     }
   }
 
@@ -55,7 +56,8 @@ export class BusinessController {
       const result = await businessService.deleteBusiness(id, profile.id, profile.role);
       return successResponse(c, "Business deleted successfully", result);
     } catch (err: any) {
-      return errorResponse(c, err.message || "Failed to delete business", [err.message], 400);
+      const status = err.message === "Business not found" ? 404 : 400;
+      return errorResponse(c, err.message || "Failed to delete business", [err.message], status);
     }
   }
 
@@ -66,7 +68,8 @@ export class BusinessController {
       const result = await businessService.updateBusinessStatus(id, status);
       return successResponse(c, "Business status updated successfully", result);
     } catch (err: any) {
-      return errorResponse(c, err.message || "Failed to update business status", [err.message], 400);
+      const status = err.message === "Business not found" ? 404 : 400;
+      return errorResponse(c, err.message || "Failed to update business status", [err.message], status);
     }
   }
 }

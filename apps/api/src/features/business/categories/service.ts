@@ -1,6 +1,7 @@
 import { CategoryRepository } from "./repository.js";
-
 import { db } from "../../../config/database.js";
+import { businessCategories } from "../../../database/schema.js";
+import { eq } from "drizzle-orm";
 
 const categoryRepo = new CategoryRepository();
 
@@ -107,7 +108,11 @@ export class CategoryService {
     return await db.transaction(async (tx) => {
       const results = [];
       for (const item of categories) {
-        const updated = await categoryRepo.updateSortOrder(item.id, item.sortOrder);
+        const [updated] = await tx
+          .update(businessCategories)
+          .set({ sortOrder: item.sortOrder })
+          .where(eq(businessCategories.id, item.id))
+          .returning();
         if (updated) {
           results.push(updated);
         }

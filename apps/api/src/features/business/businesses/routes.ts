@@ -25,6 +25,9 @@ const validateParamId = zValidator("param", z.object({
   }
 });
 
+// Protected route (registered before /:id to prevent parameter shadowing)
+businessesRouter.get("/me", authMiddleware, (c) => controller.getOwn(c));
+
 // Public Endpoint
 businessesRouter.get("/:id", validateParamId, (c) => controller.getById(c));
 
@@ -32,7 +35,6 @@ businessesRouter.get("/:id", validateParamId, (c) => controller.getById(c));
 businessesRouter.use(authMiddleware);
 
 businessesRouter.post("/", requireRole(["vendor", "admin"]), validateJson(businessSchema), (c) => controller.register(c));
-businessesRouter.get("/me", (c) => controller.getOwn(c));
 businessesRouter.put("/:id", validateParamId, validateJson(businessSchema), (c) => controller.update(c));
 businessesRouter.delete("/:id", validateParamId, (c) => controller.delete(c));
 businessesRouter.patch("/:id/status", requireRole(["admin"]), validateParamId, validateJson(businessStatusSchema), (c) => controller.updateStatus(c));

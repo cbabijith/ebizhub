@@ -6,7 +6,6 @@ export const categorySchema = z.object({
   icon: z.string().optional().nullable(),
   image: z.string().optional().nullable(),
   sortOrder: z.number().int().default(0),
-  status: z.enum(["active", "inactive"]).default("active"),
 });
 
 export const categoryReorderSchema = z.object({
