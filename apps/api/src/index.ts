@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
 import { db } from "./db/index.js";
-import { users } from "./db/schema.js";
+import { profiles } from "./db/schema.js";
 
 const app = new Hono();
 
@@ -18,13 +18,13 @@ app.get("/", (c) => {
   });
 });
 
-// Example route to fetch users from database
-app.get("/users", async (c) => {
+// Example route to fetch profiles from database
+app.get("/profiles", async (c) => {
   try {
-    const allUsers = await db.select().from(users);
-    return c.json({ success: true, data: allUsers });
+    const allProfiles = await db.select().from(profiles);
+    return c.json({ success: true, data: allProfiles });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching profiles:", error);
     return c.json({ success: false, error: "Database error" }, 500);
   }
 });

@@ -109,17 +109,154 @@ Authentication & Identity
 └── Master Data Management
 ```
 
-## Database Entities
+## Database Schema Design (Drizzle & PostgreSQL)
 
-- **Users** (Auth profiles, Roles, Permissions)
-- **Members** (Community member profiles)
-- **Businesses** (Registries, Profiles, Gallery, Locations)
-- **Products & Services** (Business Showcase items - max 5 per business)
-- **Service Providers** (Freelancers and individual professionals)
-- **Categories** (Business & Service lookup lists)
-- **Interaction Logs** (Views, clicks for Call, WhatsApp, and Maps)
-- **Verification Requests** (Backend approval pipeline logs)
-- **Settings** (Global system configuration)
+The schema is organized around business domains. The source code is organized module-wise under `apps/api/src/db/schema/`.
+
+### 1. Authentication & Identity
+*   **Table:** `profiles` (References Supabase `auth.users`)
+    *   `id` (UUID, Primary Key, references `auth.users.id`)
+    *   `full_name` (Text, Not Null)
+    *   `phone` (Text)
+    *   `email` (Text, Unique, Not Null)
+    *   `avatar` (Text)
+    *   `role` (Enum: `admin`, `vendor`, `customer` - default `customer`)
+    *   `status` (Enum: `active`, `inactive`, `suspended` - default `active`)
+    *   `created_at` / `updated_at` (Timestamps with timezone)
+
+### 2. Member Management
+*   **Table:** `members`
+    *   `id` (UUID, Primary Key, default random)
+    *   `profile_id` (UUID, Foreign Key → `profiles.id`)
+    *   `membership_number` (Text)
+    *   `district_id` (Integer, Foreign Key → `districts.id`)
+    *   `panchayat_id` (Integer, Foreign Key → `panchayats.id`)
+    *   `occupation` (Text)
+    *   `company` (Text)
+    *   `bio` (Text)
+    *   `verification_status` (Enum: `pending`, `verified`, `rejected` - default `pending`)
+    *   `created_at` / `updated_at` (Timestamps with timezone)
+
+### 3. Business Management
+*   **Table:** `businesses`
+    *   `id` (UUID, Primary Key, default random)
+    *   `owner_id` (UUID, Foreign Key → `profiles.id`)
+    *   `category_id` (Integer, Foreign Key → `business_categories.id`)
+    *   `business_name` (Text, Not Null)
+    *   `slug` (Text, Unique, Not Null)
+    *   `description` (Text)
+    *   `phone` (Text, Not Null)
+    *   `whatsapp` (Text)
+    *   `email` (Text)
+    *   `website` (Text)
+    *   `logo` (Text)
+    *   `cover_image` (Text)
+    *   `address` (Text, Not Null)
+    *   `district_id` (Integer, Foreign Key → `districts.id`)
+    *   `panchayat_id` (Integer, Foreign Key → `panchayats.id`)
+    *   `latitude` / `longitude` (Double Precision)
+    *   `working_hours` (Text)
+    *   `gst_number` (Text)
+    *   `established_year` (Integer)
+    *   `verification_status` (Enum: `pending`, `verified`, `rejected` - default `pending`)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+    *   `created_at` / `updated_at` (Timestamps with timezone)
+
+*   **Table:** `business_gallery`
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`)
+    *   `image_url` (Text, Not Null)
+    *   `sort_order` (Integer, default 0)
+    *   `created_at` (Timestamp with timezone)
+
+*   **Table:** `business_products` (Max 5 products restriction enforced in API)
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`)
+    *   `title` (Text, Not Null)
+    *   `description` (Text)
+    *   `image` (Text)
+    *   `display_order` (Integer, default 0)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+
+*   **Table:** `business_services` (Max 5 services restriction enforced in API)
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`)
+    *   `title` (Text, Not Null)
+    *   `description` (Text)
+    *   `image` (Text)
+    *   `display_order` (Integer, default 0)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+
+### 4. Service Provider Management
+*   **Table:** `service_providers`
+    *   `id` (UUID, Primary Key)
+    *   `profile_id` (UUID, Foreign Key → `profiles.id`)
+    *   `service_category_id` (Integer, Foreign Key → `service_categories.id`)
+    *   `experience` (Integer, default 0)
+    *   `bio` (Text)
+    *   `phone` (Text, Not Null)
+    *   `service_radius` (Integer, default 10)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+    *   `verification_status` (Enum: `pending`, `verified`, `rejected` - default `pending`)
+    *   `created_at` / `updated_at` (Timestamps with timezone)
+
+### 5. Directory & Discovery (Master Data Categories)
+*   **Table:** `business_categories`
+    *   `id` (Serial, Primary Key)
+    *   `name` (Text, Unique, Not Null)
+    *   `slug` (Text, Unique, Not Null)
+    *   `icon` (Text)
+    *   `sort_order` (Integer, default 0)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+
+*   **Table:** `service_categories`
+    *   `id` (Serial, Primary Key)
+    *   `name` (Text, Unique, Not Null)
+    *   `slug` (Text, Unique, Not Null)
+    *   `icon` (Text)
+    *   `sort_order` (Integer, default 0)
+    *   `status` (Enum: `active`, `inactive` - default `active`)
+
+### 6. Locations (Master Data)
+*   **Table:** `districts`
+    *   `id` (Serial, Primary Key)
+    *   `name` (Text, Unique, Not Null)
+
+*   **Table:** `panchayats`
+    *   `id` (Serial, Primary Key)
+    *   `district_id` (Integer, Foreign Key → `districts.id`)
+    *   `name` (Text, Not Null)
+
+### 7. Customer Interaction & Analytics
+*   **Table:** `interaction_logs`
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`)
+    *   `action` (Enum: `profile_view`, `phone_click`, `whatsapp_click`, `map_click`)
+    *   `ip` / `device` (Text)
+    *   `created_at` (Timestamp with timezone)
+
+*   **Table:** `business_analytics`
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`, Unique)
+    *   `profile_views` / `phone_clicks` / `whatsapp_clicks` / `map_clicks` (Integer, default 0)
+    *   `updated_at` (Timestamp with timezone)
+
+### 8. Administration (Verification Queue)
+*   **Table:** `verification_requests`
+    *   `id` (UUID, Primary Key)
+    *   `business_id` (UUID, Foreign Key → `businesses.id`)
+    *   `submitted_by` (UUID, Foreign Key → `profiles.id`)
+    *   `status` (Enum: `pending`, `approved`, `rejected` - default `pending`)
+    *   `reviewed_by` (UUID, Foreign Key → `profiles.id`)
+    *   `reviewed_at` (Timestamp with timezone)
+    *   `remarks` (Text)
+    *   `created_at` (Timestamp with timezone)
+
+### 9. Master Settings
+*   **Table:** `settings`
+    *   `key` (Text, Primary Key)
+    *   `value` (Text, Not Null)
+
 
 ---
 
