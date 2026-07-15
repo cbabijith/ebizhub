@@ -458,4 +458,7 @@ Client Request ──> Shared Middleware ──> Routes ──> Controller ─�
 Detailed system documentation resources:
 - 📊 **[Database Schema Design & ERD](file:///home/abijithcb/.gemini/antigravity-ide/brain/7988d6c2-7460-437a-9ebc-50ec02eaa7bf/db_schema_documentation.md)**: Tables, constraints, columns, and relations mappings.
 - 🔀 **[System Data Flow Diagrams](file:///home/abijithcb/.gemini/antigravity-ide/brain/7988d6c2-7460-437a-9ebc-50ec02eaa7bf/data_flow_diagrams.md)**: Visual sequence diagrams mapping out vendor onboarding, search/discovery, click-tracking, and admin vetting workflows.
+- 🔑 **[Feature 01: Authentication & Identity](file:///home/abijithcb/Projects/ebizhub/docs/feature-01-authentication.md)**: Details on authentication registers and live Supabase Auth integration.
+- 👥 **[Feature 02: Member Module](file:///home/abijithcb/Projects/ebizhub/docs/feature-02-members.md)**: Details on Three-Layer Identity, normalized branch lookups, and profile completion formulas.
+- 🧪 **[QA Member Verification Report](file:///home/abijithcb/Projects/ebizhub/docs/qa/member-verification.md)**: Verified E2E Functional and Security validation scorecards.
 

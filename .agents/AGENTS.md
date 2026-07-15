@@ -11,6 +11,7 @@ When modifying or building features for the client apps or backend:
 - **Direct-to-Customer Contact Options**: Always display Contact, WhatsApp, and Google Map buttons on business/service details pages.
 - **Analytics & Event Tracking**: Track every profile visit, and every click on Contact, WhatsApp, and Google Map. Write tracking logs to the database or send them to the analytics endpoint of `apps/api`.
 - **Verified Status**: Vendors must be vetted/verified by the admin before their listings appear in the main feed of `user-web` and `user-app`.
+- **Three-Layer Identity Architecture**: Ensure all profile models strictly follow: `Supabase Auth` (credentials) ──> `profiles` (generic identity) ──> `members` (community-specific details). Never allow client profile updates to directly modify community/admin status, branch assignments, joined date, or membership IDs. Use Zod parsing to strip protected parameters.
 
 ---
 
