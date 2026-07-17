@@ -1,8 +1,18 @@
-export default function Home() {
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function HomeRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/members");
+  }, [router]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-4">EzhavaClub Admin Dashboard</h1>
-      <p className="text-gray-600">Welcome to the admin panel</p>
-    </main>
-  )
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+    </div>
+  );
 }

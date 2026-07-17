@@ -1,22 +1,18 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import React from "react";
+import { AuthProvider } from "../lib/auth/auth-provider";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: 'EzhavaClub Admin',
-  description: 'Admin dashboard for EzhavaClub',
-}
+const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="h-full bg-gray-50">
+      <body className={`${inter.className} h-full`}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
-  )
+  );
 }
