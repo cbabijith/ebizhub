@@ -1,5 +1,9 @@
 # Feature 04 — Service Provider Management
 
+**Version:** v4.0  
+**Status:** ✅ COMPLETED  
+**Module Path:** `apps/api/src/features/service-providers/`
+
 This feature allows verified community members to register and manage their professional service provider profiles, portfolios, skills, and service areas.
 
 ## Database Schema

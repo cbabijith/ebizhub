@@ -10,7 +10,7 @@ export class BusinessController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await businessService.registerBusiness(profile.id, body);
-      return successResponse(c, "Business registered successfully", result, 201);
+      return successResponse(c, "Business registered successfully", result, {}, 201);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to register business", [err.message], 400);
     }

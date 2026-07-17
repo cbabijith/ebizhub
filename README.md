@@ -111,7 +111,7 @@ Authentication & Identity
 
 ## Database Schema Design (Drizzle & PostgreSQL)
 
-The schema is organized around business domains. The source code is organized module-wise under `apps/api/src/db/schema/`.
+The schema is organized around business domains. The source code is organized module-wise under `apps/api/src/database/schema/`.
 
 ### 1. Authentication & Identity
 *   **Table:** `profiles` (References Supabase `auth.users`)
@@ -375,9 +375,11 @@ Client Request ──> Shared Middleware ──> Routes ──> Controller ─�
 2. **Members** (Feature 2) - ✅ Completed v2.5
 3. **Business Management** (Feature 3) - ✅ Completed v2.0
 4. **Service Providers** (Feature 4) - ✅ Completed v4.0
-5. **Search & Discovery** (Feature 5)
-6. **Verification Queue** (Feature 6)
-7. **Analytics Dashboard** (Feature 7)
+5. **Search & Discovery** (Feature 5) - ⚠️ Functionally complete; production hardening pending (v1.1)
+6. **Verification Queue** (Feature 6) - ✅ Completed v1.0
+7. **Analytics Dashboard** (Feature 7) - ✅ Completed v1.0
+8. **Community Engagement Platform** (Feature 06 - New Phase) - ✅ Completed v1.0
+9. **Frontend & Mobile Apps** (Feature 8) - ⏳ Skeleton only
 
 ### Standardized Response Formats
 
@@ -459,6 +461,13 @@ Detailed system documentation resources:
 - 🔑 **[Feature 01: Authentication & Identity](file:///home/abijithcb/Projects/ebizhub/docs/feature-01-authentication.md)**: Details on authentication registers and live Supabase Auth integration.
 - 👥 **[Feature 02: Member Module](file:///home/abijithcb/Projects/ebizhub/docs/feature-02-members.md)**: Details on Three-Layer Identity, normalized branch lookups, and profile completion formulas.
 - 🏢 **[Feature 03: Business Management](file:///home/abijithcb/Projects/ebizhub/docs/feature-03-business-management.md)**: Business registration, gallery, products/services (max 5), verification, search, and analytics.
+- �️ **[Feature 04: Service Providers](file:///home/abijithcb/Projects/ebizhub/docs/feature-04-service-providers.md)**: Provider profiles, portfolios, skills, service areas, public listings, search, and analytics.
+- �🔍 **[Feature 05: Discovery Platform](file:///home/abijithcb/Projects/ebizhub/docs/feature-05-discovery.md)**: Details on Discovery aggregates, directory listings, unified search, categories, recommendations, and analytics.
+- ✅ **[Feature 06: Verification Queue](file:///home/abijithcb/Projects/ebizhub/docs/feature-06-verification-queue.md)**: Business and service-provider verification submit/approve/reject workflows.
+- 📊 **[Feature 07: Analytics Dashboard](file:///home/abijithcb/Projects/ebizhub/docs/feature-07-analytics-dashboard.md)**: Profile views, phone/WhatsApp/map click tracking, aggregate analytics, and search analytics.
 - 🧪 **[QA Member Verification Report](file:///home/abijithcb/Projects/ebizhub/docs/qa/member-verification.md)**: Verified E2E Functional and Security validation scorecards.
 - 🧪 **[QA Business Management Report](file:///home/abijithcb/Projects/ebizhub/docs/qa/feature-03-business-qa.md)**: Feature 03 Stage 1 Functional + Stage 2 Authorization QA scorecard.
+- 🧪 **[QA Discovery Platform Verification Report](file:///home/abijithcb/Projects/ebizhub/docs/qa/feature-05-verification.md)**: Feature 05 Sprint 4 QA functional verification report.
+- 🧪 **[QA Discovery Platform Performance Report](file:///home/abijithcb/Projects/ebizhub/docs/qa/feature-05-performance.md)**: Feature 05 Performance and latency test results.
+
 

@@ -10,7 +10,7 @@ export class VerificationController {
       const profile = c.get("profile");
       const { providerId } = c.req.valid("json" as never) as any;
       const result = await verificationService.submitRequest(profile.id, profile.role, providerId);
-      return successResponse(c, "Verification request submitted successfully", result, 201);
+      return successResponse(c, "Verification request submitted successfully", result, {}, 201);
     } catch (err: any) {
       const isNotFound = err.message === "Service provider not found";
       const status = isNotFound ? 404 : (err.statusCode || 400);

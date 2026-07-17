@@ -10,7 +10,7 @@ export class ServiceController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await serviceService.addService(profile.id, body);
-      return successResponse(c, "Service added successfully", result, 201);
+      return successResponse(c, "Service added successfully", result, {}, 201);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to add service", [err.message], 400);
     }

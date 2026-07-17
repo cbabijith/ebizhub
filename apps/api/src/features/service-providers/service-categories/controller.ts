@@ -41,7 +41,7 @@ export class ServiceCategoryController {
     try {
       const body = c.req.valid("json" as never) as any;
       const result = await categoryService.createCategory(body);
-      return successResponse(c, "Category created successfully", result, 201);
+      return successResponse(c, "Category created successfully", result, {}, 201);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to create category", [err.message], 400);
     }

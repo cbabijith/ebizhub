@@ -10,7 +10,7 @@ export class GalleryController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await galleryService.addImage(profile.id, profile.role, body);
-      return successResponse(c, "Image added to gallery successfully", result, 201);
+      return successResponse(c, "Image added to gallery successfully", result, {}, 201);
     } catch (err: any) {
       const status = err.message === "Business not found" ? 404 : 400;
       return errorResponse(c, err.message || "Failed to add image", [err.message], status);

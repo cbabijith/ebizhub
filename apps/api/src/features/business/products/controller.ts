@@ -10,7 +10,7 @@ export class ProductController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await productService.addProduct(profile.id, body);
-      return successResponse(c, "Product added successfully", result, 201);
+      return successResponse(c, "Product added successfully", result, {}, 201);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to add product", [err.message], 400);
     }

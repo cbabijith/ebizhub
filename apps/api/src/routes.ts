@@ -41,3 +41,24 @@ apiRouter.route("/v1/business-analytics", analyticsRouter);
 
 // Feature 04 - Service Provider Module
 apiRouter.route("/v1", serviceProvidersRouter);
+
+// Feature 05 - Discovery Platform
+import discoveryRouter from "./features/discovery/index.js";
+import { adminFeaturedRouter } from "./features/discovery/featured/routes.js";
+apiRouter.route("/v1/discovery", discoveryRouter);
+apiRouter.route("/v1/admin", adminFeaturedRouter);
+
+// Feature 06 - Community Engagement Platform
+import { communityRouter } from "./features/community/index.js";
+apiRouter.route("/v1/community", communityRouter);
+
+// Feature 07 - User Engagement
+import { favoritesRouter, ratingsRouter, reviewsRouter, adminReviewsRouter, bookmarksRouter, shareLinksRouter, emailRouter } from "./features/engagement/index.js";
+apiRouter.route("/v1/favorites", favoritesRouter);
+apiRouter.route("/v1/ratings", ratingsRouter);
+apiRouter.route("/v1/reviews", reviewsRouter);
+apiRouter.route("/v1/admin", adminReviewsRouter);
+apiRouter.route("/v1/bookmarks", bookmarksRouter);
+apiRouter.route("/v1/share-links", shareLinksRouter);
+apiRouter.route("/v1/email", emailRouter);
+

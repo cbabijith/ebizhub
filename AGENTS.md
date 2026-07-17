@@ -18,10 +18,11 @@ EzhavaClub is a community-based digital directory platform designed to connect c
 1. **Feature 01: Authentication & Identity** — ✅ Completed v1.0
 2. **Feature 02: Member Profile** — ✅ Completed v2.5
 3. **Feature 03: Business Management** — ✅ Completed v2.0
-4. **Feature 04: Service Providers** — ✅ COMPLETE v4.0
-5. **Feature 05: Search & Discovery** — ⏳ Not Started
-6. **Feature 06: Verification Queue** — ⏳ Not Started
-7. **Feature 07: Analytics Dashboard** — ⏳ Not Started
+4. **Feature 04: Service Providers** — ✅ Completed v4.0
+5. **Feature 05: Search & Discovery** — ⚠️ Functionally complete; production hardening pending v1.1
+6. **Feature 06: Verification Queue** — ✅ Completed v1.0
+7. **Feature 07: Analytics Dashboard** — ✅ Completed v1.0
+8. **Feature 08: Frontend & Mobile Apps** — ⏳ Not Started (skeleton only)
 
 ---
 
@@ -39,15 +40,37 @@ apps/api/
 │   └── features/               # Self-contained feature folders
 │       ├── auth/               # Module 1
 │       ├── members/            # Module 2
-│       └── business/           # Module 3
-│           ├── categories/
-│           ├── businesses/
-│           ├── gallery/
-│           ├── products/
-│           ├── services/
-│           ├── verification/
+│       ├── business/           # Module 3
+│       │   ├── categories/
+│       │   ├── businesses/
+│       │   ├── gallery/
+│       │   ├── products/
+│       │   ├── services/
+│       │   ├── verification/
+│       │   ├── search/
+│       │   └── analytics/
+│       ├── service-providers/  # Module 4
+│       │   ├── service-categories/
+│       │   ├── providers/
+│       │   ├── portfolio/
+│       │   ├── provider-skills/
+│       │   ├── service-areas/
+│       │   ├── search/
+│       │   ├── public/
+│       │   ├── verification/
+│       │   └── analytics/
+│       └── discovery/          # Module 5
+│           ├── home/
+│           ├── business-directory/
+│           ├── provider-directory/
 │           ├── search/
-│           └── analytics/
+│           ├── categories/
+│           ├── analytics/
+│           ├── featured/
+│           ├── recommendations/
+│           ├── trending/
+│           ├── recent/
+│           └── popular-categories/
 ```
 
 ---
@@ -84,5 +107,13 @@ Always prefer utilizing `bun` CLI utilities for execution, TS/TSX compiling, and
 To run integration/E2E test files inside `apps/api/tests/`:
 ```bash
 ~/.bun/bin/bun test tests/business-e2e.test.ts
+~/.bun/bin/bun test tests/service-provider-e2e.test.ts
+~/.bun/bin/bun test tests/discovery-e2e.test.ts
 ```
 *(Ensure the backend server is running and configured with correct Supabase environment variables beforehand).*
+
+## Current Implementation Notes
+
+- Backend API features 01–07 are implemented and wired in `apps/api/src/routes.ts`.
+- Web and mobile client applications under `apps/admin-web/`, `apps/user-web/`, `apps/admin-app/`, and `apps/user-app/` are generated skeletons with placeholder home screens only.
+- Database migrations folder does not yet exist; use `bun node_modules/drizzle-kit/bin.cjs push` (or `bun run db:push` inside `apps/api`) to sync schema changes.

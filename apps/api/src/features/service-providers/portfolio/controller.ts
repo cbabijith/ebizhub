@@ -10,7 +10,7 @@ export class PortfolioController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await portfolioService.addPortfolioItem(profile.id, profile.role, body);
-      return successResponse(c, "Portfolio item created successfully", result, 201);
+      return successResponse(c, "Portfolio item created successfully", result, {}, 201);
     } catch (err: any) {
       const status = err.message === "Service provider not found" ? 404 : (err.statusCode || 400);
       return errorResponse(c, err.message || "Failed to create portfolio item", [err.message], status);

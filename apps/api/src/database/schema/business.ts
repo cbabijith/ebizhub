@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, doublePrecision, boolean, index } from "drizzle-orm/pg-core";
 
 import { profiles } from "./profile";
 import { businessCategories } from "./business-category";
@@ -30,7 +30,13 @@ export const businesses = pgTable("businesses", {
   establishedYear: integer("established_year"),
   verificationStatus: text("verification_status", { enum: ["pending", "verified", "rejected"] }).default("pending").notNull(),
   status: text("status", { enum: ["active", "inactive", "suspended"] }).default("active").notNull(),
+  isFeatured: boolean("is_featured").default(false).notNull(),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  businessesCategoryIdx: index("businesses_category_idx").on(table.categoryId),
+  businessesStatusVerifiedIdx: index("businesses_status_verified_idx").on(table.status, table.verificationStatus),
+  businessesCreatedAtIdx: index("businesses_created_at_idx").on(table.createdAt),
+  businessesNameIdx: index("businesses_name_idx").on(table.businessName),
+}));

@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, integer, timestamp, index } from "drizzle-orm/pg-core";
 import { businesses } from "./business";
 
 export const businessAnalytics = pgTable("business_analytics", {
@@ -9,4 +9,6 @@ export const businessAnalytics = pgTable("business_analytics", {
   whatsappClicks: integer("whatsapp_clicks").default(0).notNull(),
   mapClicks: integer("map_clicks").default(0).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  businessAnalyticsBusinessIdx: index("business_analytics_business_idx").on(table.businessId),
+}));

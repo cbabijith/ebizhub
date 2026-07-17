@@ -62,3 +62,29 @@ export function requireRole(allowedRoles: ("admin" | "vendor" | "customer")[]) {
     await next();
   };
 }
+
+export async function optionalAuthMiddleware(c: Context, next: Next) {
+  const authHeader = c.req.header("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    await next();
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (!error && user) {
+      const profile = await authRepo.findProfileById(user.id);
+      if (profile && profile.status === "active") {
+        c.set("user", user);
+        c.set("profile", profile);
+        c.set("role", profile.role);
+      }
+    }
+  } catch (err) {
+    // Ignore error, treat as guest
+  }
+  await next();
+}
+

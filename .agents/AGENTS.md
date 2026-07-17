@@ -19,9 +19,9 @@ When modifying or building features for the client apps or backend:
 
 ### Backend (`apps/api` - Hono + Drizzle)
 - Use **Drizzle ORM** for database interaction.
-- Keep schemas defined in `apps/api/src/db/schema.ts`.
+- Keep schemas defined in `apps/api/src/database/schema.ts`.
 - Place routes, validation, and business logic organized cleanly under `apps/api/src/`.
-- Import local modules with explicit `.js` extensions (e.g. `import { db } from "./db/index.js"`).
+- Import local modules with explicit `.js` extensions (e.g. `import { db } from "./config/database.js"`).
 
 ### Next.js Client Apps (`apps/admin-web`, `apps/user-web`)
 - Use Next.js 14 App Router layout structure.

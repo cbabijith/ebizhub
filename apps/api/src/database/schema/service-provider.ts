@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, integer, timestamp, boolean, index } from "drizzle-orm/pg-core";
 import { profiles } from "./profile.js";
 import { serviceCategories } from "./service-category.js";
 import { members } from "./member.js";
@@ -20,7 +20,13 @@ export const serviceProviders = pgTable("service_providers", {
   serviceRadius: integer("service_radius").default(10).notNull(), // radius in km
   status: text("status", { enum: ["active", "inactive", "suspended"] }).default("active").notNull(),
   verificationStatus: text("verification_status", { enum: ["pending", "verified", "rejected"] }).default("pending").notNull(),
+  isFeatured: boolean("is_featured").default(false).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
-});
+}, (table) => ({
+  serviceProvidersCategoryIdx: index("service_providers_category_idx").on(table.serviceCategoryId),
+  serviceProvidersStatusVerifiedIdx: index("service_providers_status_verified_idx").on(table.status, table.verificationStatus),
+  serviceProvidersCreatedAtIdx: index("service_providers_created_at_idx").on(table.createdAt),
+  serviceProvidersProfessionIdx: index("service_providers_profession_idx").on(table.profession),
+}));

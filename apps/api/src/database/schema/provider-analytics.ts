@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, integer, timestamp, index } from "drizzle-orm/pg-core";
 import { serviceProviders } from "./service-provider.js";
 
 export const providerAnalytics = pgTable("provider_analytics", {
@@ -9,4 +9,6 @@ export const providerAnalytics = pgTable("provider_analytics", {
   whatsappClicks: integer("whatsapp_clicks").default(0).notNull(),
   mapClicks: integer("map_clicks").default(0).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  providerAnalyticsProviderIdx: index("provider_analytics_provider_idx").on(table.providerId),
+}));

@@ -61,7 +61,7 @@ beforeAll(async () => {
 
     // Get member profile ID
     const profile = await request("GET", "/v1/auth/me", undefined, memberToken);
-    memberId = profile.body?.data?.id ?? "";
+    memberId = profile.body?.data?.profile?.id ?? "";
   }
 
   console.log("Admin token loaded:", adminToken ? "✓" : "✗");

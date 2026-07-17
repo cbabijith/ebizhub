@@ -1,8 +1,4 @@
-CREATE SCHEMA "auth";
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth"."users" (
-	"id" uuid PRIMARY KEY NOT NULL
-);
+-- skipped auth schema and table creation
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "branches" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,

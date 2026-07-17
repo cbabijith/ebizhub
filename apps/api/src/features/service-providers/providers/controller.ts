@@ -10,7 +10,7 @@ export class ProviderController {
       const profile = c.get("profile");
       const body = c.req.valid("json" as never) as any;
       const result = await providerService.registerProvider(profile.id, body);
-      return successResponse(c, "Service provider registered successfully", result, 201);
+      return successResponse(c, "Service provider registered successfully", result, {}, 201);
     } catch (err: any) {
       return errorResponse(c, err.message || "Failed to register provider", [err.message], 400);
     }
