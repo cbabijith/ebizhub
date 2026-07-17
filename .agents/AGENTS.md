@@ -4,6 +4,43 @@ Welcome to the **EzhavaClub (eBizHub)** codebase development agent rules. These 
 
 ---
 
+## 🏁 EBizHub Phase 1 – Admin Panel Development Notes
+
+### Objective
+The primary objective of Phase 1 is **not** to build a large enterprise admin panel.
+The goal is to **collect, verify, organize, and publish as much community information as possible**, making it searchable and discoverable by every community member.
+
+### Core Goals
+1. Register every community member.
+2. Register every business.
+3. Register every service provider.
+4. Verify the information.
+5. Publish verified information to the public website and mobile app.
+6. Build a searchable digital community directory.
+
+### Build Only the Core Admin Modules
+1. **Dashboard**: Platform growth stats (Total Members, Businesses, Providers, Pending Verifications, Recently Added). No complex analytics.
+2. **Member Management (Highest Priority)**: Complete profile CRUD, soft deletes, and verification.
+3. **Business Management**: directory list, verification queue, search, filters.
+4. **Service Provider Management**: verified professional listing list, search, filters.
+5. **Categories**: Simple Business & Service categories. No nesting.
+6. **Community Content**: Basic CRUD for News, Events, Jobs, Offers, Notices.
+7. **Banner Management**: Home & Ad banners.
+8. **Admin Profile**: Profile edits, password changes.
+
+### Modules NOT Required in Phase 1 (Do not spend development time on these yet)
+* Reports & Advanced Analytics, Audit Logs, Email Template Builder.
+* Multiple Admin Roles & Permission Management.
+* Membership Plans, Subscription Systems, Payment Gateways, Wallets, Marketplace.
+* AI Features, Chat System, Advanced Notifications, ERP Integrations.
+
+### Development Philosophy
+Every screen should answer one question:
+**"Does this help us collect, verify, manage, or display community information?"**
+If the answer is **No**, postpone it. Simplicity, speed, data quality, and easy verification are key.
+
+---
+
 ## 1. Core Business Rules & Constraints
 
 When modifying or building features for the client apps or backend:

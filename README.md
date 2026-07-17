@@ -8,6 +8,107 @@ EzhavaClub is a community-based digital platform designed to connect businesses,
 The core focus for Phase 1 is simple:
 > **Connect Ezhava community members with verified businesses and service providers in a simple, trusted platform.**
 
+All design and development decisions support the objective of collecting, verifying, organizing, and publishing community information so it is searchable by every member.
+
+---
+
+# EBizHub Phase 1 – Admin Panel Development Notes
+
+## Objective
+The primary objective of Phase 1 is **not** to build a large enterprise admin panel.
+The goal is to **collect, verify, organize, and publish as much community information as possible**, making it searchable and discoverable by every community member.
+
+### Phase 1 Core Goals
+1. Register every community member.
+2. Register every business.
+3. Register every service provider.
+4. Verify the information.
+5. Publish verified information to the public website and mobile app.
+6. Build a searchable digital community directory.
+
+---
+
+## Core Admin Modules to Build
+
+### 1. Dashboard
+Provide a quick overview of platform growth. Avoid complex analytics for Phase 1.
+* Total Members
+* Total Businesses
+* Total Service Providers
+* Pending Verifications
+* Recently Added Records
+
+### 2. Member Management (Highest Priority)
+Collect complete details for every community member.
+* Member List
+* Add/View/Edit Member
+* Delete Member (Soft Delete)
+* Verify & Search Members
+* Filter & Export Members
+* Future: Excel/CSV Import
+
+### 3. Business Management
+Build the largest verified business directory for the community.
+* Business List
+* Add/View/Edit/Delete Business
+* Verify Business
+* Search & Filters
+
+### 4. Service Provider Management
+Create a verified directory of professionals and skilled workers.
+* Provider List
+* Add/View/Edit/Delete Provider
+* Verify Provider
+* Search & Filters
+
+### 5. Categories
+Keep it simple with no advanced hierarchy:
+* Business Categories
+* Service Categories
+
+### 6. Community Content (Basic CRUD)
+Keep the community active with useful information:
+* News, Events, Jobs, Offers, Notices
+
+### 7. Banner Management
+* Home Banners
+* Advertisement Banners
+
+### 8. Admin Profile
+* My Profile
+* Change Password
+
+---
+
+## Modules NOT Required in Phase 1 (Postponed)
+Do not spend development time on these yet:
+* Reports & Advanced Analytics
+* Audit Logs & Email Template Builder
+* Multiple Admin Roles & Permission Management
+* Membership Plans & Subscription System
+* Payment Gateway, Wallet, & Marketplace
+* AI Features, Chat System, & ERP Integrations
+
+---
+
+## Recommended Sidebar
+* Dashboard
+* Members
+* Businesses
+* Service Providers
+* Categories
+* Community (News, Events, Jobs, Offers, Notices)
+* Banners
+* Profile
+
+---
+
+## Development Philosophy
+Every screen should answer one question:
+**"Does this help us collect, verify, manage, or display community information?"**
+If the answer is **No**, postpone it. Simplicity, speed, data quality, and easy verification are key.
+
+
 ---
 
 ## Workspace Structure
