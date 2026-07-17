@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
-import { businesses } from "./business";
+import { businesses } from "./business.js";
 
 export const businessGallery = pgTable("business_gallery", {
   id: uuid("id").defaultRandom().primaryKey(),

@@ -1,9 +1,9 @@
 import { pgTable, uuid, text, timestamp, integer, doublePrecision, boolean, index } from "drizzle-orm/pg-core";
 
-import { profiles } from "./profile";
-import { businessCategories } from "./business-category";
-import { districts } from "./district";
-import { panchayats } from "./panchayat";
+import { profiles } from "./profile.js";
+import { businessCategories } from "./business-category.js";
+import { districts } from "./district.js";
+import { panchayats } from "./panchayat.js";
 
 export const businesses = pgTable("businesses", {
   id: uuid("id").defaultRandom().primaryKey(),

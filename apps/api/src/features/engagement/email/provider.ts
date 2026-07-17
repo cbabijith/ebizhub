@@ -92,7 +92,8 @@ class SmtpEmailProvider implements EmailProvider {
 
 // ─── Provider factory ─────────────────────────────────────────────────────────
 export function getEmailProvider(): EmailProvider {
-  if (!env.EMAIL_ENABLED) {
+  // Always skip real email delivery if running within test suites (or EMAIL_ENABLED is false)
+  if (!env.EMAIL_ENABLED || env.NODE_ENV === "test" || process.env.NODE_ENV === "test") {
     return new DevEmailProvider();
   }
   switch (env.EMAIL_PROVIDER) {

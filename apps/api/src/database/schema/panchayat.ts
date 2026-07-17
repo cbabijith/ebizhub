@@ -1,5 +1,5 @@
 import { pgTable, serial, text, integer } from "drizzle-orm/pg-core";
-import { districts } from "./district";
+import { districts } from "./district.js";
 
 export const panchayats = pgTable("panchayats", {
   id: serial("id").primaryKey(),

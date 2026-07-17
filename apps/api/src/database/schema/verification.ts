@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
-import { businesses } from "./business";
-import { profiles } from "./profile";
+import { businesses } from "./business.js";
+import { profiles } from "./profile.js";
 
 export const verificationRequests = pgTable("verification_requests", {
   id: uuid("id").defaultRandom().primaryKey(),
